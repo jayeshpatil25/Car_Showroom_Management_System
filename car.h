@@ -60,13 +60,7 @@ typedef struct car_recognition {
     struct car_recognition* next; // Pointer to next sale
 } car_recognition;
 
-// Structure for Service Details
-typedef struct Service {
-    int car_id;
-    char service_date[11];
-    float service_cost;
-    struct Service* next; // Pointer to next service
-} service;
+// Structure for Service Detail
 
 // Merge Databases Function
 void mergeDatabases(struct Stock* showroom1, struct Stock* showroom2, struct Stock** mergedDatabase) {
