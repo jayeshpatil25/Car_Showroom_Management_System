@@ -4,15 +4,23 @@
 
 #define MAX_STRING_LEN 100
 
-// Structure for Car Stock Details
-typedef struct Stock {
+//Car structure
+//car steerfsnkf
+typedef struct Car {
     int car_id;               // Unique Car ID
     char model_name[MAX_STRING_LEN];
     char color[MAX_STRING_LEN];
     char fuel_type[MAX_STRING_LEN];
     char car_type[MAX_STRING_LEN];
-    int available_quantity;
     float price;
+}car;
+
+// Structure for Car Stock Details
+typedef struct Stock {
+    car car_list;
+    int sold_cars;
+    int available_cars;
+    int required_stock;
     struct Stock* next; // Pointer to the next stock item
 }stock;
 
@@ -38,16 +46,16 @@ typedef struct Salesperson {
 } Salesperson;
 
 // Structure for Sold Cars
-typedef struct Sold_Cars {
-    int sale_id;
-    int car_id;
-    int customer_id;
-    char sale_date[11];
-    float sale_price;
-    float emi_amount;
-    char insurance_eval_date[11];
-    struct Sold_Cars* next; // Pointer to next sale
-} sold_cars;
+// typedef struct Sold_Cars {
+//     int sale_id;
+//     int car_id;
+//     int customer_id;
+//     char sale_date[11];
+//     float sale_price;
+//     float emi_amount;
+//     char insurance_eval_date[11];
+//     struct Sold_Cars* next; // Pointer to next sale
+// } sold_cars;
 
 // Structure for Service Details
 typedef struct Service {
