@@ -17,13 +17,13 @@ typedef struct Stock {
 }stock;
 
 // Structure for Customer Details
-struct Customer {
+typedef struct Customer {
     int customer_id;
     char name[MAX_STRING_LEN];
     char mobile_no[15];
     char address[MAX_STRING_LEN];
     struct Customer* next; // Pointer to the next customer
-};
+} customer;
 
 // Structure for Salesperson Details
 typedef struct Salesperson {
@@ -38,7 +38,7 @@ typedef struct Salesperson {
 } Salesperson;
 
 // Structure for Sold Cars
-struct Sold_Cars {
+typedef struct Sold_Cars {
     int sale_id;
     int car_id;
     int customer_id;
@@ -47,15 +47,15 @@ struct Sold_Cars {
     float emi_amount;
     char insurance_eval_date[11];
     struct Sold_Cars* next; // Pointer to next sale
-};
+} sold_cars;
 
 // Structure for Service Details
-struct Service {
+typedef struct Service {
     int car_id;
     char service_date[11];
     float service_cost;
     struct Service* next; // Pointer to next service
-};
+} service;
 
 // Merge Databases Function
 void mergeDatabases(struct Stock* showroom1, struct Stock* showroom2, struct Stock** mergedDatabase) {
