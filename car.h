@@ -5,16 +5,16 @@
 #define MAX_STRING_LEN 100
 
 // Structure for Car Stock Details
-struct Stock {
+typedef struct Stock {
     int car_id;               // Unique Car ID
     char model_name[MAX_STRING_LEN];
     char color[MAX_STRING_LEN];
     char fuel_type[MAX_STRING_LEN];
     char car_type[MAX_STRING_LEN];
-    int quantity;
+    int available_quantity;
     float price;
     struct Stock* next; // Pointer to the next stock item
-};
+}stock;
 
 // Structure for Customer Details
 struct Customer {
