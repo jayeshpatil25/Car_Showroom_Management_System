@@ -6,7 +6,6 @@
 #define CUSTOMERS 100
 
 // Car structure
-// car steerfsnkf
 typedef struct Car
 {
     int car_id; // Unique Car ID
@@ -15,13 +14,21 @@ typedef struct Car
     char fuel_type[MAX_STRING_LEN];
     char car_type[MAX_STRING_LEN];
     float price;
+    int sold_cars;
+    int salesperson_id;
+    int sold_date;
 } car;
+
+typedef struct Showroom {
+    stock stock_list;
+    car car_list;
+} showroom;
 
 // Structure for Car Stock Details
 typedef struct Stock
 {
+    int stock_id;
     car car_list;
-    int sold_cars;
     int available_cars;
     int required_stock;
     struct Stock *next; // Pointer to the next stock item
