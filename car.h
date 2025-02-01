@@ -3,6 +3,7 @@
 #include <string.h>
 
 #define MAX_STRING_LEN 100
+#define CUSTOMERS 100
 
 // Structure for Car Stock Details
 typedef struct Stock {
@@ -34,6 +35,7 @@ typedef struct Salesperson {
     float sales_target;
     float sales_achieved;
     float commission;
+    customer list_customer[CUSTOMERS];
     struct Salesperson* next; // Pointer to next salesperson
 } Salesperson;
 
