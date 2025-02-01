@@ -61,7 +61,6 @@ typedef struct car_recognition {
 } car_recognition;
 
 
-
 // Merge Databases Function
 void mergeDatabases(struct Stock* showroom1, struct Stock* showroom2, struct Stock** mergedDatabase) {
     // Function to merge two linked lists of stock details
