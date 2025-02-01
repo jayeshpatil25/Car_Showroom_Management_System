@@ -26,16 +26,16 @@ struct Customer {
 };
 
 // Structure for Salesperson Details
-struct Salesperson {
+typedef struct Salesperson {
     int salesperson_id;
-    char name[MAX_STRING_LEN];
-    char dob[11];  // Format: DD/MM/YYYY
+    char name_salesperson[MAX_STRING_LEN];
+    char DOB[11];  // Format: DD/MM/YYYY
     char address[MAX_STRING_LEN];
     float sales_target;
     float sales_achieved;
     float commission;
     struct Salesperson* next; // Pointer to next salesperson
-};
+} Salesperson;
 
 // Structure for Sold Cars
 struct Sold_Cars {
