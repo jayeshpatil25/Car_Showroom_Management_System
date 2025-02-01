@@ -47,17 +47,18 @@ typedef struct Salesperson {
     struct Salesperson* next; // Pointer to next salesperson
 } Salesperson;
 
-// Structure for Sold Cars
-// typedef struct Sold_Cars {
-//     int sale_id;
-//     int car_id;
-//     int customer_id;
-//     char sale_date[11];
-//     float sale_price;
-//     float emi_amount;
-//     char insurance_eval_date[11];
-//     struct Sold_Cars* next; // Pointer to next sale
-// } sold_cars;
+
+typedef struct car_recognition {
+    car car_list;
+    customer customer_details;
+    int registration_num;
+    char previous_service[20]; //date
+    char next_service[20]; //date
+    float emi_amount;
+    float actual_amount;
+    char insurance_eval_date[11];
+    struct car_recognition* next; // Pointer to next sale
+} car_recognition;
 
 // Structure for Service Details
 typedef struct Service {
