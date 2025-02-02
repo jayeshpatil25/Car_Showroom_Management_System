@@ -17,7 +17,6 @@ typedef struct Car
     char car_type[MAX_STRING_LEN];
     float price;
     int sold_cars;
-    
     int sold_date; //consider dates as 1 through 12
 } car;
 
@@ -193,14 +192,4 @@ void most_popular_salesperson(car_recognition cars[CARS])
     printf("Most popular sales person is with id: %d", loc);
 }
 
-// Function to Display All Stock Items
-void displayStock(struct Stock *stock)
-{
-    struct Stock *temp = stock;
-    while (temp != NULL)
-    {
-        printf("Car ID: %d, Model: %s, Color: %s, Type: %s, Fuel: %s, Quantity: %d, Price: %.2f\n",
-               temp->car_id, temp->model_name, temp->color, temp->car_type, temp->fuel_type, temp->quantity, temp->price);
-        temp = temp->next;
-    }
-}
+
