@@ -17,25 +17,25 @@ typedef struct Car
     char car_type[MAX_STRING_LEN];
     float price;
     int sold_cars;
-    int salesperson_id;
-    int sold_date;
+    
+    int sold_date; //consider dates as 1 through 12
 } car;
-
-typedef struct Showroom
-{
-    stock stock_list;
-    car car_list[CARS];
-} showroom;
 
 // Structure for Car Stock Details
 typedef struct Stock
 {
     int stock_id;
-    car car_list;
     int available_cars;
     int required_stock;
     struct Stock *next; // Pointer to the next stock item
 } stock;
+
+typedef struct Showroom
+{
+    stock stock_list;
+    car car_list[CARS];
+    struct Showroom *next;
+} showroom;
 
 // Structure for Customer Details
 typedef struct Customer
@@ -50,7 +50,7 @@ typedef struct Customer
 // Structure for Salesperson Details
 typedef struct Salesperson
 {
-    int salesperson_id;
+    int salesperson_id; //total 10 ids
     char name_salesperson[MAX_STRING_LEN];
     char DOB[11]; // Format: DD/MM/YYYY
     char address[MAX_STRING_LEN];
@@ -63,8 +63,9 @@ typedef struct Salesperson
 
 typedef struct car_recognition
 {
-    car car_list;
+    car car_list[CARS];
     customer customer_details;
+    int salesperson_id;
     int registration_num;
     char previous_service[20]; // date
     char next_service[20];     // date
@@ -74,18 +75,21 @@ typedef struct car_recognition
     struct car_recognition *next; // Pointer to next sale
 } car_recognition;
 
+
+
 void most_popular_car(showroom *showroom1, showroom *showroom2, showroom *showroom3)
 {
     int cntA = 0, cntB = 0, cntC = 0;
     // for showroom1
-
-    for (int i = 0; i < CARS; i++)
+    showroom* ptr= showroom1;
+    int i=0;
+    while(ptr!=NULL)
     {
-        if (strcmp(showroom1->car_list[i].model_name, "modelA")==0)
+        if (strcmp(ptr->car_list[i].model_name, "modelA")==0)
         {
             cntA++;
         }
-        else if (strcmp(showroom1->car_list[i].model_name, "modelB")==0)
+        else if (strcmp(ptr->car_list[i].model_name, "modelB")==0)
         {
             cntB++;
         }
@@ -93,31 +97,40 @@ void most_popular_car(showroom *showroom1, showroom *showroom2, showroom *showro
         {
             cntC++;
         }
+        i++;
+        ptr=ptr->next;
+    }
+    showroom* ptr2= showroom2;
+    i=0;
+
+    while(ptr2!=NULL)
+    {
+        if (strcmp(ptr2->car_list[i].model_name, "modelA")==0)
+        {
+            cntA++;
+        }
+        else if (strcmp(ptr2->car_list[i].model_name, "modelB")==0)
+        {
+            cntB++;
+        }
+        else
+        {
+            cntC++;
+        }
+        i++;
+        ptr2=ptr2->next;
     }
 
-    for (int i = 0; i < CARS; i++)
-    {
-        if (strcmp(showroom2->car_list[i].model_name, "modelA")==0)
-        {
-            cntA++;
-        }
-        else if (strcmp(showroom2->car_list[i].model_name, "modelB")==0)
-        {
-            cntB++;
-        }
-        else
-        {
-            cntC++;
-        }
-    }
+    i=0;
+    showroom* ptr3= showroom3;
 
-    for (int i = 0; i < CARS; i++)
+    while(ptr3!=NULL)
     {
-        if (strcmp(showroom3->car_list[i].model_name, "modelA")==0)
+        if (strcmp(ptr3->car_list[i].model_name, "modelA")==0)
         {
             cntA++;
         }
-        else if (strcmp(showroom3->car_list[i].model_name, "modelB")==0)
+        else if (strcmp(ptr3->car_list[i].model_name, "modelB")==0)
         {
             cntB++;
         }
@@ -125,6 +138,8 @@ void most_popular_car(showroom *showroom1, showroom *showroom2, showroom *showro
         {
             cntC++;
         }
+        i++;
+        ptr3=ptr3->next;
     }
 
     int maxCnt = fmax(cntA, fmax(cntB, cntC));
@@ -144,28 +159,38 @@ void most_popular_car(showroom *showroom1, showroom *showroom2, showroom *showro
 }
 
 // Merge Databases Function
-void mergeDatabases(struct Stock *showroom1, struct Stock *showroom2, struct Stock **mergedDatabase)
+void mergeDB(showroom *showroom1, showroom *showroom2, showroom *showroom3)
 {
-    // Function to merge two linked lists of stock details
-    struct Stock *temp = showroom1;
-    while (temp != NULL)
+
+}
+
+void most_popular_salesperson(car_recognition cars[CARS])
+{
+    int a[10];
+
+    for(int i=0; i<10; i++)
     {
-        struct Stock *new_node = (struct Stock *)malloc(sizeof(struct Stock));
-        *new_node = *temp;
-        new_node->next = *mergedDatabase;
-        *mergedDatabase = new_node;
-        temp = temp->next;
+        a[i]=0;
     }
 
-    temp = showroom2;
-    while (temp != NULL)
+    for(int i=0; i<CARS; i++)
     {
-        struct Stock *new_node = (struct Stock *)malloc(sizeof(struct Stock));
-        *new_node = *temp;
-        new_node->next = *mergedDatabase;
-        *mergedDatabase = new_node;
-        temp = temp->next;
+        a[cars[i].salesperson_id]++;
     }
+
+    int max=a[0];
+    int loc=0;
+
+    for(int i=1; i<10; i++)
+    {
+        if(a[i]>max)
+        {
+            max=a[i];
+            loc=i;
+        }
+    }
+
+    printf("Most popular sales person is with id: %d", loc);
 }
 
 // Function to Display All Stock Items
