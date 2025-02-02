@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define MAX_STRING_LEN 100
 #define CUSTOMERS 100
+#define CARS 100
 
 // Car structure
 typedef struct Car
@@ -19,9 +21,10 @@ typedef struct Car
     int sold_date;
 } car;
 
-typedef struct Showroom {
+typedef struct Showroom
+{
     stock stock_list;
-    car car_list;
+    car car_list[CARS];
 } showroom;
 
 // Structure for Car Stock Details
@@ -70,6 +73,75 @@ typedef struct car_recognition
     char insurance_eval_date[11];
     struct car_recognition *next; // Pointer to next sale
 } car_recognition;
+
+void most_popular_car(showroom *showroom1, showroom *showroom2, showroom *showroom3)
+{
+    int cntA = 0, cntB = 0, cntC = 0;
+    // for showroom1
+
+    for (int i = 0; i < CARS; i++)
+    {
+        if (strcmp(showroom1->car_list[i].model_name, "modelA")==0)
+        {
+            cntA++;
+        }
+        else if (strcmp(showroom1->car_list[i].model_name, "modelB")==0)
+        {
+            cntB++;
+        }
+        else
+        {
+            cntC++;
+        }
+    }
+
+    for (int i = 0; i < CARS; i++)
+    {
+        if (strcmp(showroom2->car_list[i].model_name, "modelA")==0)
+        {
+            cntA++;
+        }
+        else if (strcmp(showroom2->car_list[i].model_name, "modelB")==0)
+        {
+            cntB++;
+        }
+        else
+        {
+            cntC++;
+        }
+    }
+
+    for (int i = 0; i < CARS; i++)
+    {
+        if (strcmp(showroom3->car_list[i].model_name, "modelA")==0)
+        {
+            cntA++;
+        }
+        else if (strcmp(showroom3->car_list[i].model_name, "modelB")==0)
+        {
+            cntB++;
+        }
+        else
+        {
+            cntC++;
+        }
+    }
+
+    int maxCnt = fmax(cntA, fmax(cntB, cntC));
+
+    if (maxCnt == cntA)
+    {
+        printf("Most Popluar car if ModelA");
+    }
+    else if (maxCnt == cntB)
+    {
+        printf("Most popular car is ModelB");
+    }
+    else
+    {
+        printf("Most popular car is ModelC");
+    }
+}
 
 // Merge Databases Function
 void mergeDatabases(struct Stock *showroom1, struct Stock *showroom2, struct Stock **mergedDatabase)
