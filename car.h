@@ -166,7 +166,7 @@ car *sorted_merge(car *a, car *b)
 }
 
 // Merge sort function
-void merge_sort(car **head_ref)
+void merge_sort_showroom_DB(car **head_ref)
 {
     if (!*head_ref || !(*head_ref)->next)
         return;
@@ -177,8 +177,8 @@ void merge_sort(car **head_ref)
     
     split_list(head, &a, &b);
     
-    merge_sort(&a);
-    merge_sort(&b);
+    merge_sort_showroom_DB(&a);
+    merge_sort_showroom_DB(&b);
     
     *head_ref = sorted_merge(a, b);
 }
@@ -211,7 +211,7 @@ car *merge_and_sort_car_databases(car *list1, car *list2, car *list3)
         merged_list = insert_end(merged_list, temp);
     }
     
-    merge_sort(&merged_list);
+    merge_sort_showroom_DB(&merged_list);
     return merged_list;
 }
 
@@ -287,3 +287,57 @@ float calculate_pending_loan(salesperson *head, char *salesperson_name) {
 }
 
 
+// Function to convert date string to an integer (YYYYMMDD format)
+int date_to_int(const char *date) {
+    int day, month, year;
+    if (sscanf(date, "%d/%d/%d", &day, &month, &year) != 3) {
+        return -1; // Return an invalid value if the format is incorrect
+    }
+    return year * 10000 + month * 100 + day;
+}
+
+// Merge function for merge sort
+Car* merge(Car* left, Car* right) {
+    if (!left) return right;
+    if (!right) return left;
+    
+    if (date_to_int(left->sold_date) < date_to_int(right->sold_date)) {
+        left->next = merge(left->next, right);
+        return left;
+    } else {
+        right->next = merge(left, right->next);
+        return right;
+    }
+}
+
+// Function to split a linked list into two halves
+void split(Car* head, Car** left, Car** right) {
+    if (!head || !head->next) {
+        *left = head;
+        *right = NULL;
+        return;
+    }
+    
+    Car *slow = head, *fast = head->next;
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    
+    *left = head;
+    *right = slow->next;
+    slow->next = NULL;
+}
+
+// MergeSort function for sorting the linked list
+void mergeSort_car_date(Car** head) {
+    if (!(*head) || !(*head)->next) return;
+    
+    Car *left, *right;
+    split(*head, &left, &right);
+    
+    mergeSort_car_date(&left);
+    mergeSort_car_date(&right);
+    
+    *head = merge(left, right);
+}
