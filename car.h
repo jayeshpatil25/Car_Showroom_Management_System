@@ -464,3 +464,38 @@ void display_prediction(SalesHistory *history, const char *next_month) {
     int predicted_sales = predict_next_month_sales(history);
     printf("Predicted sales for %s (Model: %s) = %d units\n", next_month, history->model_name, predicted_sales);
 }
+
+
+typedef struct ServiceBill {
+    int customer_id;
+    char car_model[100];
+    float labor_hours;     // Number of labor hours
+    float labor_rate;      // Cost per hour
+    float spare_parts_cost; // Total cost of spare parts
+    float tax_rate;        // Tax percentage (e.g., 10% = 0.10)
+} ServiceBill;
+
+// Function to calculate total service bill
+float calculate_service_bill(ServiceBill *bill) {
+    float labor_cost = bill->labor_hours * bill->labor_rate;
+    float total_before_tax = labor_cost + bill->spare_parts_cost;
+    float tax_amount = total_before_tax * bill->tax_rate;
+    float total_bill = total_before_tax + tax_amount;
+    return total_bill;
+}
+
+// Function to print the service bill details
+void print_service_bill(ServiceBill *bill) {
+    float total = calculate_service_bill(bill);
+    
+    printf("\n------ SERVICE BILL ------\n");
+    printf("Customer ID: %d\n", bill->customer_id);
+    printf("Car Model: %s\n", bill->car_model);
+    printf("Labor Cost: %.2f (%.2f hours @ %.2f per hour)\n", 
+            bill->labor_hours * bill->labor_rate, bill->labor_hours, bill->labor_rate);
+    printf("Spare Parts Cost: %.2f\n", bill->spare_parts_cost);
+    printf("Tax (%.2f%%): %.2f\n", bill->tax_rate * 100, 
+            (bill->labor_hours * bill->labor_rate + bill->spare_parts_cost) * bill->tax_rate);
+    printf("Total Bill: %.2f\n", total);
+    printf("--------------------------\n");
+}
