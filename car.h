@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "uthash.h"
 
 #define MAX_STRING_LEN 100
 #define CUSTOMERS 100
@@ -62,6 +63,56 @@ typedef struct Salesperson
     struct Salesperson *next; // Pointer to next salesperson
 } salesperson;
 
+
+typedef struct {
+    char model_name[MAX_STRING_LEN];
+    int total_sold;
+    UT_hash_handle hh;
+} ModelSales;
+
+ModelSales *model_sales_map = NULL;
+
+// Function to add or update the sales count
+void add_to_sales_map(const char *model, int sold) {
+    ModelSales *entry;
+    HASH_FIND_STR(model_sales_map, model, entry);
+    if (entry) {
+        entry->total_sold += sold;
+    } else {
+        entry = (ModelSales*) malloc(sizeof(ModelSales));
+        strcpy(entry->model_name, model);
+        entry->total_sold = sold;
+        HASH_ADD_STR(model_sales_map, model_name, entry);
+    }
+}
+
+// Function to find the most popular car model
+void find_most_popular_model() {
+    ModelSales *entry, *tmp;
+    char most_popular[MAX_STRING_LEN] = "";
+    int max_sold = 0;
+    
+    HASH_ITER(hh, model_sales_map, entry, tmp) {
+        if (entry->total_sold > max_sold) {
+            max_sold = entry->total_sold;
+            strcpy(most_popular, entry->model_name);
+        }
+    }
+    
+    if (max_sold > 0) {
+        printf("Most popular car model: %s with %d sales.\n", most_popular, max_sold);
+    } else {
+        printf("No sales data available.\n");
+    }
+}
+
+void free_sales_map() {
+    ModelSales *entry, *tmp;
+    HASH_ITER(hh, model_sales_map, entry, tmp) {
+        HASH_DEL(model_sales_map, entry);
+        free(entry);
+    }
+}
 
 // Function to insert a car at the end of the list
 car *insert_end(car *head, car *new_car)
