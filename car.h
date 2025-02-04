@@ -24,14 +24,6 @@ typedef struct Car
     struct Car *next;
 } car;
 
-// Structure for Car Showroom
-typedef struct Showroom
-{
-    car *car_list; 
-    customer *customer_list;
-    salesperson *salesperson_list;
-} showroom;
-
 // Structure for Customer Details
 typedef struct Customer
 {
@@ -63,12 +55,20 @@ typedef struct Salesperson
     struct Salesperson *next; // Pointer to next salesperson
 } salesperson;
 
-
-typedef struct {
+//Structure for HashMap
+typedef struct HashMap{
     char model_name[MAX_STRING_LEN];
     int total_sold;
     UT_hash_handle hh;
 } ModelSales;
+
+// Structure for Car Showroom
+typedef struct Showroom
+{
+    car *car_list; 
+    customer *customer_list;
+    salesperson *salesperson_list;
+} showroom;
 
 ModelSales *model_sales_map = NULL;
 
@@ -265,120 +265,25 @@ car *create_car(int id, char *model, char *color, float price)
     return new_car;
 }
 
-void most_popular_car(showroom *showroom1, showroom *showroom2, showroom *showroom3)
-{
-    int cntA = 0, cntB = 0, cntC = 0;
-    // for showroom1
-    showroom* ptr= showroom1;
-    int i=0;
-    while(ptr!=NULL)
-    {
-        if (strcmp(ptr->car_list[i].model_name, "modelA")==0)
-        {
-            cntA++;
-        }
-        else if (strcmp(ptr->car_list[i].model_name, "modelB")==0)
-        {
-            cntB++;
-        }
-        else
-        {
-            cntC++;
-        }
-        i++;
-        ptr=ptr->next;
-    }
-    showroom* ptr2= showroom2;
-    i=0;
-
-    while(ptr2!=NULL)
-    {
-        if (strcmp(ptr2->car_list[i].model_name, "modelA")==0)
-        {
-            cntA++;
-        }
-        else if (strcmp(ptr2->car_list[i].model_name, "modelB")==0)
-        {
-            cntB++;
-        }
-        else
-        {
-            cntC++;
-        }
-        i++;
-        ptr2=ptr2->next;
-    }
-
-    i=0;
-    showroom* ptr3= showroom3;
-
-    while(ptr3!=NULL)
-    {
-        if (strcmp(ptr3->car_list[i].model_name, "modelA")==0)
-        {
-            cntA++;
-        }
-        else if (strcmp(ptr3->car_list[i].model_name, "modelB")==0)
-        {
-            cntB++;
-        }
-        else
-        {
-            cntC++;
-        }
-        i++;
-        ptr3=ptr3->next;
-    }
-
-    int maxCnt = fmax(cntA, fmax(cntB, cntC));
-
-    if (maxCnt == cntA)
-    {
-        printf("Most Popluar car if ModelA");
-    }
-    else if (maxCnt == cntB)
-    {
-        printf("Most popular car is ModelB");
-    }
-    else
-    {
-        printf("Most popular car is ModelC");
-    }
-}
-
-// Merge Databases Function
-void mergeDB(showroom *showroom1, showroom *showroom2, showroom *showroom3)
-{
+float calculate_pending_loan(salesperson *head, char *salesperson_name) {
+    salesperson *sp = head;
     
-}
+    while (sp != NULL) {
+        if (strcmp(sp->name_salesperson, salesperson_name) == 0) {
+            float total_pending = 0.0;
+            customer *cust = sp->list_customer;
+            
+            while (cust != NULL) {
+                total_pending += cust->actual_amt_to_pay;
+                cust = cust->next;
+            }
 
-void most_popular_salesperson(car_recognition cars[CARS])
-{
-    int a[10];
-
-    for(int i=0; i<10; i++)
-    {
-        a[i]=0;
-    }
-
-    for(int i=0; i<CARS; i++)
-    {
-        a[cars[i].salesperson_id]++;
-    }
-
-    int max=a[0];
-    int loc=0;
-
-    for(int i=1; i<10; i++)
-    {
-        if(a[i]>max)
-        {
-            max=a[i];
-            loc=i;
+            return total_pending;
         }
+        sp = sp->next;
     }
 
-    printf("Most popular sales person is with id: %d", loc);
+    return -1; // Return -1 if salesperson is not found
 }
 
 
