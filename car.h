@@ -19,7 +19,7 @@ typedef struct Car
     int sold_cars;
     int available_cars;
     int required_stock;
-    int sold_date; //consider dates as 1 through 12
+    char sold_date[11];
     struct Car *next;
 } car;
 
@@ -62,6 +62,157 @@ typedef struct Salesperson
     struct Salesperson *next; // Pointer to next salesperson
 } salesperson;
 
+
+// Function to insert a car at the end of the list
+car *insert_end(car *head, car *new_car)
+{
+    if (head == NULL)
+        return new_car;
+    
+    car *current = head;
+    while (current->next != NULL)
+        current = current->next;
+    
+    current->next = new_car;
+    return head;
+}
+
+// Function to split a linked list into two halves
+void split_list(car *source, car **front, car **back)
+{
+    car *fast = source->next;
+    car *slow = source;
+    
+    while (fast && fast->next)
+    {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    
+    *front = source;
+    *back = slow->next;
+    slow->next = NULL;
+}
+
+// Function to merge two sorted lists
+car *sorted_merge(car *a, car *b)
+{
+    if (!a) return b;
+    if (!b) return a;
+    
+    car *result = NULL;
+    if (a->car_id <= b->car_id)
+    {
+        result = a;
+        result->next = sorted_merge(a->next, b);
+    }
+    else
+    {
+        result = b;
+        result->next = sorted_merge(a, b);
+    }
+    return result;
+}
+
+// Merge sort function
+void merge_sort(car **head_ref)
+{
+    if (!*head_ref || !(*head_ref)->next)
+        return;
+    
+    car *head = *head_ref;
+    car *a;
+    car *b;
+    
+    split_list(head, &a, &b);
+    
+    merge_sort(&a);
+    merge_sort(&b);
+    
+    *head_ref = sorted_merge(a, b);
+}
+
+// Function to merge three unsorted car lists and sort them
+car *merge_and_sort_car_databases(car *list1, car *list2, car *list3)
+{
+    car *merged_list = NULL;
+    car *temp;
+
+    while (list1)
+    {
+        temp = list1;
+        list1 = list1->next;
+        temp->next = NULL;
+        merged_list = insert_end(merged_list, temp);
+    }
+    while (list2)
+    {
+        temp = list2;
+        list2 = list2->next;
+        temp->next = NULL;
+        merged_list = insert_end(merged_list, temp);
+    }
+    while (list3)
+    {
+        temp = list3;
+        list3 = list3->next;
+        temp->next = NULL;
+        merged_list = insert_end(merged_list, temp);
+    }
+    
+    merge_sort(&merged_list);
+    return merged_list;
+}
+
+// Function to calculate total pending loan amount for a salesperson
+float calculate_pending_loan(salesperson *head, char *salesperson_name) {
+    salesperson *sp = head;
+    
+    while (sp != NULL) {
+        if (strcmp(sp->name_salesperson, salesperson_name) == 0) {
+            float total_pending = 0.0;
+            customer *cust = sp->list_customer;
+            
+            while (cust != NULL) {
+                total_pending += cust->actual_amt_to_pay;
+                cust = cust->next;
+            }
+
+            return total_pending;
+        }
+        sp = sp->next;
+    }
+
+    return -1; // Return -1 if salesperson is not found
+}
+
+// Function to print car details
+void print_car_list(car *head)
+{
+    while (head != NULL)
+    {
+        printf("Car ID: %d, Model: %s, Color: %s, Price: %.2f\n",
+               head->car_id, head->model_name, head->color, head->price);
+        head = head->next;
+    }
+}
+
+// Function to create a new car node
+car *create_car(int id, char *model, char *color, float price)
+{
+    car *new_car = (car *)malloc(sizeof(car));
+    if (!new_car)
+    {
+        printf("Memory allocation failed!\n");
+        exit(1);
+    }
+    new_car->car_id = id;
+    strcpy(new_car->model_name, model);
+    strcpy(new_car->color, color);
+    new_car->price = price;
+    new_car->next = NULL;
+    return new_car;
+}
 
 void most_popular_car(showroom *showroom1, showroom *showroom2, showroom *showroom3)
 {
