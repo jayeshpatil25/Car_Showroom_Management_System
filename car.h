@@ -341,3 +341,57 @@ void mergeSort_car_date(Car** head) {
     
     *head = merge(left, right);
 }
+
+// Function to set the sales target for a salesperson
+void set_sales_target(salesperson *sp, float target)
+{
+    if (sp)
+    {
+        sp->sales_target = target;
+        printf("Sales target of %.2f set for Salesperson ID %d (%s)\n", target, sp->salesperson_id, sp->name_salesperson);
+    }
+    else
+    {
+        printf("Invalid salesperson.\n");
+    }
+}
+
+// Function to check if the sales target is achieved
+void check_sales_target(salesperson *sp)
+{
+    if (sp)
+    {
+        if (sp->sales_achieved >= sp->sales_target)
+        {
+            printf("Salesperson ID %d (%s) has achieved the target!\n", sp->salesperson_id, sp->name_salesperson);
+        }
+        else
+        {
+            printf("Salesperson ID %d (%s) has not achieved the target. Sales Achieved: %.2f, Target: %.2f\n",
+                   sp->salesperson_id, sp->name_salesperson, sp->sales_achieved, sp->sales_target);
+        }
+    }
+    else
+    {
+        printf("Invalid salesperson.\n");
+    }
+}
+
+int is_date_in_range(const char *date, const char *start_date, const char *end_date) {
+    return strcmp(date, start_date) >= 0 && strcmp(date, end_date) <= 0;
+}
+
+// Function to find the sales figures of a specific model within a date range
+int find_sales(showroom *showrooms, int showroom_count, const char *model, const char *start_date, const char *end_date) {
+    int total_sales = 0;
+    for (int i = 0; i < showroom_count; i++) {
+        car *current = showrooms[i].car_list;
+        while (current) {
+            if (strcmp(current->model_name, model) == 0 && is_date_in_range(current->sold_date, start_date, end_date)) {
+                total_sales += current->sold_cars;
+            }
+            current = current->next;
+        }
+    }
+    return total_sales;
+}
