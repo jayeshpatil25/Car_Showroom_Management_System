@@ -17,23 +17,18 @@ typedef struct Car
     char car_type[MAX_STRING_LEN];
     float price;
     int sold_cars;
-    int sold_date; //consider dates as 1 through 12
-} car;
-
-// Structure for Car Stock Details
-typedef struct Stock
-{
-    int stock_id;
     int available_cars;
     int required_stock;
-    struct Stock *next; // Pointer to the next stock item
-} stock;
+    int sold_date; //consider dates as 1 through 12
+    struct Car *next;
+} car;
 
+// Structure for Car Showroom
 typedef struct Showroom
 {
-    stock stock_list;
-    car car_list[CARS];
-    struct Showroom *next;
+    car *car_list; 
+    customer *customer_list;
+    salesperson *salesperson_list;
 } showroom;
 
 // Structure for Customer Details
@@ -41,8 +36,15 @@ typedef struct Customer
 {
     int customer_id;
     char name[MAX_STRING_LEN];
+    int registration_no;
+    int car_id;
     char mobile_no[15];
     char address[MAX_STRING_LEN];
+    char prev_service_date[11];
+    char next_service_date[11];
+    float actual_amt_to_pay;
+    float emi;
+    char insurance_eval_date[11];
     struct Customer *next; // Pointer to the next customer
 } customer;
 
@@ -56,24 +58,9 @@ typedef struct Salesperson
     float sales_target;
     float sales_achieved;
     float commission;
-    customer list_customer[CUSTOMERS];
+    customer *list_customer;
     struct Salesperson *next; // Pointer to next salesperson
-} Salesperson;
-
-typedef struct car_recognition
-{
-    car car_list[CARS];
-    customer customer_details;
-    int salesperson_id;
-    int registration_num;
-    char previous_service[20]; // date
-    char next_service[20];     // date
-    float emi_amount;
-    float actual_amount;
-    char insurance_eval_date[11];
-    struct car_recognition *next; // Pointer to next sale
-} car_recognition;
-
+} salesperson;
 
 
 void most_popular_car(showroom *showroom1, showroom *showroom2, showroom *showroom3)
