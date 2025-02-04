@@ -3,10 +3,12 @@
 #include <string.h>
 #include <math.h>
 #include "uthash.h"
+#include <time.h>
 
 #define MAX_STRING_LEN 100
 #define CUSTOMERS 100
 #define CARS 100
+#define MONTHS 12
 
 // Car structure
 typedef struct Car
@@ -394,4 +396,71 @@ int find_sales(showroom *showrooms, int showroom_count, const char *model, const
         }
     }
     return total_sales;
+}
+
+// Function to calculate the next service date (6 months after purchase)
+void calculate_next_service_date(const char *purchase_date, char *next_service_date) {
+    int day, month, year;
+    
+    if (sscanf(purchase_date, "%d/%d/%d", &day, &month, &year) != 3) {
+        strcpy(next_service_date, "Invalid Date");
+        return;
+    }
+
+    month += 6; // Add six months
+    if (month > 12) { 
+        month -= 12;
+        year++; // Move to next year if needed
+    }
+
+    sprintf(next_service_date, "%02d/%02d/%04d", day, month, year);
+}
+
+// Function to check if the service is due
+int is_service_due(const char *next_service_date, const char *current_date) {
+    return date_to_int(current_date) >= date_to_int(next_service_date);
+}
+
+// Function to generate service alerts for customers
+void generate_service_alerts(customer *customer_list, const char *current_date) { //generate_service_alerts(showroom.customer_list, "04/02/2025"); // Example current date
+
+    customer *cust = customer_list;
+
+    printf("\n--- Service Due Alerts ---\n");
+    while (cust) {
+        char next_service_date[11];
+        calculate_next_service_date(cust->next_service_date, next_service_date);
+
+        if (is_service_due(next_service_date, current_date)) {
+            printf("Alert: Customer %s (ID: %d) needs a service. Next service date: %s\n",
+                   cust->name, cust->customer_id, next_service_date);
+        }
+
+        cust = cust->next;
+    }
+}
+
+
+typedef struct SalesHistory {
+    char model_name[100];
+    int sales[MONTHS]; // Sales data for the last 12 months
+} SalesHistory;
+
+// Function to predict next month's sales using a simple moving average
+int predict_next_month_sales(SalesHistory *history) {
+    int total_sales = 0;
+
+    // Sum up sales from the last 12 months
+    for (int i = 0; i < MONTHS; i++) {
+        total_sales += history->sales[i];
+    }
+
+    // Return the average as the predicted sales for the next month
+    return total_sales / MONTHS;
+}
+
+// Function to display the prediction result
+void display_prediction(SalesHistory *history, const char *next_month) {
+    int predicted_sales = predict_next_month_sales(history);
+    printf("Predicted sales for %s (Model: %s) = %d units\n", next_month, history->model_name, predicted_sales);
 }
