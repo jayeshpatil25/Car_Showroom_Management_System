@@ -19,7 +19,7 @@ typedef struct Car
     int sold_cars;
     int available_cars;
     int required_stock;
-    int sold_date; //consider dates as 1 through 12
+    char sold_date[11];
     struct Car *next;
 } car;
 
@@ -147,7 +147,7 @@ void most_popular_car(showroom *showroom1, showroom *showroom2, showroom *showro
 // Merge Databases Function
 void mergeDB(showroom *showroom1, showroom *showroom2, showroom *showroom3)
 {
-
+    
 }
 
 void most_popular_salesperson(car_recognition cars[CARS])
