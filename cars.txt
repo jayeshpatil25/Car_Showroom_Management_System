@@ -1,0 +1,10 @@
+1, Toyota Corolla, White, Petrol, Sedan, 20000.0, 50, 20, 30, 2024-12-01
+2, Honda Civic, Black, Diesel, Sedan, 25000.0, 60, 25, 35, 2024-11-15
+3, Ford Mustang, Red, Petrol, Sports, 45000.0, 30, 10, 20, 2024-10-25
+4, BMW X5, Blue, Petrol, SUV, 60000.0, 70, 40, 30, 2024-09-30
+5, Tesla Model 3, Silver, Electric, Sedan, 55000.0, 45, 20, 25, 2024-12-05
+6, Audi A4, Grey, Petrol, Sedan, 35000.0, 40, 15, 25, 2024-12-10
+7, Mercedes-Benz C-Class, Black, Petrol, Sedan, 45000.0, 55, 30, 25, 2024-11-20
+8, Kia Sportage, Green, Diesel, SUV, 30000.0, 50, 20, 30, 2024-12-01
+9, Hyundai Elantra, White, Petrol, Sedan, 22000.0, 60, 25, 35, 2024-11-15
+10, Nissan Altima, Blue, Petrol, Sedan, 28000.0, 50, 20, 30, 2024-10-10

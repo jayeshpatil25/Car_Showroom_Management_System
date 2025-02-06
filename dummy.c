@@ -1,9 +1,131 @@
-#include "car.h"
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+
+#define CAR_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include "uthash.h"
+
+#define MAX_STRING_LEN 100
+#define MONTHS 12
+
+// Car structure
+typedef struct Car {
+    int car_id;
+    char model_name[MAX_STRING_LEN];
+    char color[MAX_STRING_LEN];
+    char fuel_type[MAX_STRING_LEN];
+    char car_type[MAX_STRING_LEN];
+    float price;
+    int sold_cars;
+    int available_cars;
+    int required_stock;
+    char sold_date[11];
+    struct Car *next;
+} car;
+
+// Structure for Customer Details
+typedef struct Customer {
+    int customer_id;
+    char name[MAX_STRING_LEN];
+    int registration_no;
+    int car_id;
+    char mobile_no[15];
+    char address[MAX_STRING_LEN];
+    char prev_service_date[11];
+    char next_service_date[11];
+    float actual_amt_to_pay;
+    float emi;
+    char insurance_eval_date[11];
+    struct Customer *next;
+} customer;
+
+// Structure for Salesperson Details
+typedef struct Salesperson {
+    int salesperson_id;
+    char name_salesperson[MAX_STRING_LEN];
+    char DOB[11];
+    char address[MAX_STRING_LEN];
+    float sales_target;
+    float sales_achieved;
+    float commission;
+    customer *list_customer;
+    struct Salesperson *next;
+} salesperson;
+
+// Hashmap structure for tracking car sales
+typedef struct HashMap {
+    char model_name[MAX_STRING_LEN];
+    int total_sold;
+    UT_hash_handle hh;
+} ModelSales;
+
+// Structure for Car Showroom
+typedef struct Showroom {
+    car *car_list;
+    customer *customer_list;
+    salesperson *salesperson_list;
+} showroom;
+
+typedef struct ServiceBill {
+    int customer_id;
+    char car_model[100];
+    float labor_hours;     // Number of labor hours
+    float labor_rate;      // Cost per hour
+    float spare_parts_cost; // Total cost of spare parts
+    float tax_rate;        // Tax percentage (e.g., 10% = 0.10)
+} ServiceBill;
+
+typedef struct SalesHistory {
+    char model_name[100];
+    int sales[MONTHS]; // Sales data for the last 12 months
+} SalesHistory;
 
 ModelSales *model_sales_map = NULL;
+
+// Function to insert a car at the end of the linked list
+car* insert_end(car* head, car* new_car) {
+    if (head == NULL) {
+        return new_car;
+    }
+
+    car* temp = head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = new_car;
+    return head;
+}
+
+// Function to insert a customer at the end of the linked list
+customer* insert_customer_end(customer* head, customer* new_customer) {
+    if (head == NULL) {
+        return new_customer;
+    }
+
+    customer* temp = head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = new_customer;
+    return head;
+}
+
+// Function to insert a salesperson at the end of the linked list
+salesperson* insert_salesperson_end(salesperson* head, salesperson* new_sp) {
+    if (head == NULL) {
+        return new_sp;
+    }
+
+    salesperson* temp = head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = new_sp;
+    return head;
+}
+
 
 
 // Function to add or update the sales count
@@ -245,7 +367,11 @@ void check_sales_target(salesperson *sp)
 }
 
 int is_date_in_range(const char *date, const char *start_date, const char *end_date) {
-    return strcmp(date, start_date) >= 0 && strcmp(date, end_date) <= 0;
+    int date_int = date_to_int(date);
+    int start_int = date_to_int(start_date);
+    int end_int = date_to_int(end_date);
+
+    return (date_int >= start_int && date_int <= end_int);
 }
 
 // Function to find the sales figures of a specific model within a date range
@@ -388,19 +514,7 @@ void load_car_data(const char *filename, car **head) {
     fclose(file);
 }
 
-// Function to insert car at the end of the list
-car* insert_end(car* head, car* new_car) {
-    if (head == NULL) {
-        return new_car;
-    }
 
-    car* temp = head;
-    while (temp->next != NULL) {
-        temp = temp->next;
-    }
-    temp->next = new_car;
-    return head;
-}
 
 
 // Function to create a new customer node
@@ -440,19 +554,6 @@ void load_customer_data(const char *filename, customer **head) {
     fclose(file);
 }
 
-// Function to insert customer at the end of the list
-customer* insert_customer_end(customer* head, customer* new_customer) {
-    if (head == NULL) {
-        return new_customer;
-    }
-
-    customer* temp = head;
-    while (temp->next != NULL) {
-        temp = temp->next;
-    }
-    temp->next = new_customer;
-    return head;
-}
 
 
 // Function to create a new salesperson node
@@ -488,20 +589,6 @@ void load_salesperson_data(const char *filename, salesperson **head) {
     }
 
     fclose(file);
-}
-
-// Function to insert salesperson at the end of the list
-salesperson* insert_salesperson_end(salesperson* head, salesperson* new_sp) {
-    if (head == NULL) {
-        return new_sp;
-    }
-
-    salesperson* temp = head;
-    while (temp->next != NULL) {
-        temp = temp->next;
-    }
-    temp->next = new_sp;
-    return head;
 }
 
 // Function to load model sales data into the hashmap
@@ -566,3 +653,215 @@ SalesHistory* find_sales_history(SalesHistory sales_history[], int num_models, c
     return NULL;  // Return NULL if the model is not found
 }
 
+
+// Function to free the car list
+void free_car_list(car* head) {
+    car* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+// Function to free the customer list
+void free_customer_list(customer* head) {
+    customer* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+// Function to free the salesperson list
+void free_salesperson_list(salesperson* head) {
+    salesperson* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main() {
+    car *car_list = NULL;
+    customer *customer_list = NULL;
+    salesperson *salesperson_list = NULL;
+    ModelSales *model_sales_map = NULL;
+    SalesHistory sales_history[MAX_STRING_LEN];
+    int num_models = 0;
+
+    int choice;
+    char filename[MAX_STRING_LEN];
+
+    // Load data from files
+    // Load data from files
+load_car_data("cars.txt", &car_list);
+load_customer_data("customers.txt", &customer_list);
+load_salesperson_data("salespersons.txt", &salesperson_list);
+load_model_sales_data("sales_data.txt", &model_sales_map);
+load_sales_history_data("sales_history.txt", sales_history, &num_models);
+
+// Check if data was loaded successfully
+if (car_list == NULL || customer_list == NULL || salesperson_list == NULL || model_sales_map == NULL || num_models == 0) {
+    printf("Error: Failed to load data from files. Exiting program.\n");
+    return 1;
+}
+
+    do {
+        // Display menu
+        printf("\n===== Car Showroom Management System =====\n");
+        printf("1. Display all cars\n");
+        printf("2. Display all customers\n");
+        printf("3. Display all salespersons\n");
+        printf("4. Find and display most popular car model\n");
+        printf("5. Display sales history for a specific model\n");
+        printf("6. Calculate service bill\n");
+        printf("7. Set and check salesperson target\n");
+        printf("8. Generate service alerts for customers\n");
+        printf("9. Predict next month's sales for a model\n");
+        printf("10. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                // Display all cars
+                print_car_list(car_list);
+                break;
+
+            case 2:
+                // Display all customers
+                {
+                    customer *temp = customer_list;
+                    while (temp != NULL) {
+                        printf("Customer ID: %d, Name: %s, Car ID: %d\n", temp->customer_id, temp->name, temp->car_id);
+                        temp = temp->next;
+                    }
+                }
+                break;
+
+            case 3:
+                // Display all salespersons
+                {
+                    salesperson *temp = salesperson_list;
+                    while (temp != NULL) {
+                        printf("Salesperson ID: %d, Name: %s, Sales Target: %.2f\n", temp->salesperson_id, temp->name_salesperson, temp->sales_target);
+                        temp = temp->next;
+                    }
+                }
+                break;
+
+            case 4:
+                // Find and display most popular car model
+                find_most_popular_model();
+                break;
+
+            case 5:
+                // Display sales history for a specific model
+                {
+                    char model_name[MAX_STRING_LEN];
+                    printf("Enter car model name: ");
+                    scanf("%s", model_name);
+                    SalesHistory *history = find_sales_history(sales_history, num_models, model_name);
+                    if (history) {
+                        printf("Sales history for model %s:\n", history->model_name);
+                        for (int i = 0; i < MONTHS; i++) {
+                            printf("Month %d: %d units sold\n", i + 1, history->sales[i]);
+                        }
+                    } else {
+                        printf("Sales history for model %s not found.\n", model_name);
+                    }
+                }
+                break;
+
+            case 6:
+                // Calculate service bill
+                {
+                    ServiceBill bill;
+                    printf("Enter customer ID: ");
+                    scanf("%d", &bill.customer_id);
+                    printf("Enter car model: ");
+                    scanf("%s", bill.car_model);
+                    printf("Enter labor hours: ");
+                    scanf("%f", &bill.labor_hours);
+                    printf("Enter labor rate: ");
+                    scanf("%f", &bill.labor_rate);
+                    printf("Enter spare parts cost: ");
+                    scanf("%f", &bill.spare_parts_cost);
+                    printf("Enter tax rate: ");
+                    scanf("%f", &bill.tax_rate);
+
+                    float total_bill = calculate_service_bill(&bill);
+                    printf("Total service bill: %.2f\n", total_bill);
+                }
+                break;
+
+            case 7:
+                // Set and check salesperson target
+                {
+                    char salesperson_name[MAX_STRING_LEN];
+                    float target;
+                    printf("Enter salesperson name: ");
+                    scanf("%s", salesperson_name);
+                    printf("Enter new sales target: ");
+                    scanf("%f", &target);
+                    salesperson *sp = salesperson_list;
+                    while (sp != NULL && strcmp(sp->name_salesperson, salesperson_name) != 0) {
+                        sp = sp->next;
+                    }
+                    if (sp) {
+                        set_sales_target(sp, target);
+                        check_sales_target(sp);
+                    } else {
+                        printf("Salesperson %s not found.\n", salesperson_name);
+                    }
+                }
+                break;
+
+            case 8:
+                // Generate service alerts for customers
+                {
+                    char current_date[11];
+                    printf("Enter current date (YYYY-MM-DD): ");
+                    scanf("%s", current_date);
+                    generate_service_alerts(customer_list, current_date);
+                }
+                break;
+
+            case 9:
+                // Predict next month's sales for a model
+                {
+                    char model_name[MAX_STRING_LEN];
+                    printf("Enter car model name: ");
+                    scanf("%s", model_name);
+                    SalesHistory *history = find_sales_history(sales_history, num_models, model_name);
+                    if (history) {
+                        int predicted_sales = predict_next_month_sales(history);
+                        printf("Predicted sales for next month: %d units\n", predicted_sales);
+                    } else {
+                        printf("Sales history for model %s not found.\n", model_name);
+                    }
+                }
+                break;
+
+            case 10:
+                // Exit the program
+                printf("Exiting the program.\n");
+                break;
+
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    } while (choice != 10);
+
+    // Free allocated memory
+    free_sales_map();
+    // Free allocated memory
+free_car_list(car_list);
+free_customer_list(customer_list);
+free_salesperson_list(salesperson_list);
+free_sales_map();
+    return 0;
+}
