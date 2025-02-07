@@ -1,6 +1,4 @@
 
-#define CAR_H
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -313,15 +311,22 @@ float calculate_pending_loan(salesperson *head, char *salesperson_name)
 }
 
 // Function to print car details
-void print_car_list(car *head)
-{
-    while (head != NULL)
-    {
-        printf("Car ID: %d, Model: %s, Color: %s, Price: %.2f\n",
-               head->car_id, head->model_name, head->color, head->price);
-        head = head->next;
+void print_car_list(car *car_list) {
+    if (car_list == NULL) {
+        printf("No cars available.\n");
+        return;
+    }
+
+    printf("Car ID | Model               | Price\n");
+    printf("-------------------------------------\n");
+
+    car *current = car_list;
+    while (current != NULL) {
+        printf("%-6d | %-20s | %.2f\n", current->car_id, current->model_name, current->price);
+        current = current->next;
     }
 }
+
 
 // Function to convert date string to an integer (YYYYMMDD format)
 int date_to_int(const char *date)

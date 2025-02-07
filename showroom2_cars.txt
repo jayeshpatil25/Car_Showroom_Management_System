@@ -1,0 +1,5 @@
+6, Tesla Model S, 2023, Electric, White, 80000
+7, Chevrolet Malibu, 2021, Sedan, Silver, 27000
+8, Nissan Altima, 2022, Sedan, Red, 29000
+9, Mercedes C-Class, 2023, Sedan, Black, 45000
+10, Hyundai Tucson, 2022, SUV, Blue, 32000
