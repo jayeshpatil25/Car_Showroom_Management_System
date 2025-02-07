@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "uthash.h"
 
 #define MAX_STRING_LEN 100
 #define MONTHS 12
@@ -53,12 +52,6 @@ typedef struct Salesperson {
     struct Salesperson *next;
 } salesperson;
 
-// Hashmap structure for tracking car sales
-typedef struct HashMap {
-    char model_name[MAX_STRING_LEN];
-    int total_sold;
-    UT_hash_handle hh;
-} ModelSales;
 
 // Structure for Car Showroom
 typedef struct Showroom {
@@ -81,7 +74,6 @@ typedef struct SalesHistory {
     int sales[MONTHS]; // Sales data for the last 12 months
 } SalesHistory;
 
-ModelSales *model_sales_map = NULL;
 
 // Function to insert a car at the end of the linked list
 car *insert_end(car *head, car *new_car) {
@@ -622,7 +614,6 @@ void find_top_salesperson(salesperson *all_salespersons) {
 
 int main() {
     showroom showrooms[NUM_SHOWROOMS] = {0}; // Initialize all showrooms
-    ModelSales *model_sales_map = NULL;
     SalesHistory sales_history[MAX_STRING_LEN];
     int num_models = 0;
     car *all_cars = NULL;
@@ -805,10 +796,12 @@ int main() {
             case 11:
                 merge_all_data(showrooms, &all_cars, &all_customers, &all_salespersons);
                 find_top_salesperson(all_salespersons);
+                break;
 
             case 12:
                 // Exit the program
                 printf("Exiting the program.\n");
+                choice=10;
                 break;
 
             default:
