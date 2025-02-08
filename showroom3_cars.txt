@@ -1,5 +1,5 @@
-11, Subaru Outback, 2023, SUV, Green, 35000
-12, Lexus RX, 2022, SUV, White, 50000
-13, Volkswagen Passat, 2021, Sedan, Gray, 26000
-14, Jeep Grand Cherokee, 2023, SUV, Black, 55000
-15, Porsche 911, 2023, Coupe, Yellow, 90000
+11, Subaru Outback, 2023, SUV, Green, 35000, 2024/01/30
+12, Lexus RX, 2022, SUV, White, 50000, 2023/12/10
+13, Volkswagen Passat, 2021, Sedan, Gray, 26000, 2023/11/05
+14, Jeep Grand Cherokee, 2023, SUV, Black, 55000, 2024/02/03
+15, Porsche 911, 2023, Coupe, Yellow, 90000, 2024/01/20
