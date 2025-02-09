@@ -404,6 +404,7 @@ void load_car_data(const char *filename, car **head)
 
     fclose(file);
 }
+
 // Function to create a new customer node
 customer *create_customer(int customer_id, const char *name, int registration_no, int car_id,
                           const char *mobile_no, const char *address,
