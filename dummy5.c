@@ -913,6 +913,88 @@ float find_sales_figures(car *car_list, const char *model_name, const char *star
     return total_sales;
 }
 
+// Function to append a salesperson to the file
+void save_salesperson_to_file(const char *filename, salesperson *sp)
+{
+    FILE *file = fopen(filename, "a"); // Open file in append mode
+    if (!file)
+    {
+        perror("Error opening salesperson file");
+    }
+    else
+    {
+        fprintf(file, "%d, %s, %s, %s, %.2f, %.2f, %.2f, %d\n",
+                sp->salesperson_id, sp->name_salesperson, sp->DOB, sp->address,
+                sp->sales_target, sp->sales_achieved, sp->commission,
+                (sp->list_customer) ? sp->list_customer->customer_id : -1);
+        fclose(file);
+    }
+}
+
+// Function to add a salesperson to a showroom
+void add_salesperson_to_showroom(showroom *showrooms)
+{
+    int showroom_id;
+    printf("Enter showroom number (1-%d): ", NUM_SHOWROOMS);
+    scanf("%d", &showroom_id);
+    
+    if (showroom_id < 1 || showroom_id > NUM_SHOWROOMS)
+    {
+        printf("Invalid showroom number!\n");
+    }
+    else
+    {
+        int id;
+        char name[MAX_STRING_LEN], dob[11], address[MAX_STRING_LEN];
+        float target, achieved, commission;
+        int customer_id;
+
+        printf("Enter Salesperson ID: ");
+        scanf("%d", &id);
+        printf("Enter Name: ");
+        scanf(" %[^\n]", name);
+        printf("Enter Date of Birth (YYYY-MM-DD): ");
+        scanf("%s", dob);
+        printf("Enter Address: ");
+        scanf(" %[^\n]", address);
+        printf("Enter Sales Target: ");
+        scanf("%f", &target);
+        printf("Enter Sales Achieved: ");
+        scanf("%f", &achieved);
+        printf("Enter Commission: ");
+        scanf("%f", &commission);
+        printf("Enter Assigned Customer ID (or -1 if none): ");
+        scanf("%d", &customer_id);
+
+        // Find the customer from the showroom's customer list
+        customer *assigned_customer = NULL;
+        customer *temp = showrooms[showroom_id - 1].customer_list;
+        while (temp)
+        {
+            if (temp->customer_id == customer_id)
+            {
+                assigned_customer = temp;
+                break;
+            }
+            temp = temp->next;
+        }
+
+        // Create the new salesperson
+        salesperson *new_sp = create_salesperson(id, name, dob, address, target, achieved, commission, assigned_customer);
+
+        // Insert into linked list
+        showrooms[showroom_id - 1].salesperson_list = insert_salesperson_end(showrooms[showroom_id - 1].salesperson_list, new_sp);
+
+        // Save to file
+        char filename[50];
+        sprintf(filename, "showroom%d_salesperson.txt", showroom_id);
+        save_salesperson_to_file(filename, new_sp);
+
+        printf("Salesperson added successfully to showroom %d!\n", showroom_id);
+    }
+}
+
+
 int main()
 {
     showroom showrooms[NUM_SHOWROOMS] = {0}; // Initialize all showrooms
@@ -956,7 +1038,8 @@ int main()
         printf("12. Sort according to car sold date\n");
         printf("13. Find total loan amount pending for a salesperson\n");
         printf("14. Sales of specific model in given duration of dates\n");
-        printf("15. Exit\n");
+        printf("15. Add Salesperson\n");
+        printf("16. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -1162,6 +1245,10 @@ int main()
         break;
 
         case 15:
+            add_salesperson_to_showroom(showrooms);
+            break;
+
+        case 16:
             // Exit the program
             printf("Exiting the program.\n");
             choice = 10;
