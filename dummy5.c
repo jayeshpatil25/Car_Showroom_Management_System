@@ -924,7 +924,7 @@ void save_salesperson_to_file(const char *filename, salesperson *sp)
     else
     {
         // Check if the file is empty
-        
+
         fprintf(file, "%d, %s, %s, %s, %.2f, %.2f, %.2f, %d\n",
                 sp->salesperson_id, sp->name_salesperson, sp->DOB, sp->address,
                 sp->sales_target, sp->sales_achieved, sp->commission,
@@ -996,6 +996,77 @@ void add_salesperson_to_showroom(showroom *showrooms)
     }
 }
 
+// Function to add a car to a showroom file (appends on a new line)
+void add_car_to_showroom(const char *filename)
+{
+    FILE *file = fopen(filename, "a"); // Open file in append mode
+    if (!file)
+    {
+        perror("Error opening file for writing");
+        return;
+    }
+
+    car new_car;
+
+    printf("Enter car details:\n");
+    printf("Car ID: ");
+    scanf("%d", &new_car.car_id);
+    printf("Model Name: ");
+    scanf(" %[^\n]", new_car.model_name);
+    printf("Color: ");
+    scanf(" %[^\n]", new_car.color);
+    printf("Fuel Type: ");
+    scanf(" %[^\n]", new_car.fuel_type);
+    printf("Car Type: ");
+    scanf(" %[^\n]", new_car.car_type);
+    printf("Price: ");
+    scanf("%f", &new_car.price);
+    printf("Sold Cars: ");
+    scanf("%d", &new_car.sold_cars);
+    printf("Available Cars: ");
+    scanf("%d", &new_car.available_cars);
+    printf("Required Stock: ");
+    scanf("%d", &new_car.required_stock);
+    printf("Sold Date (YYYY/MM/DD): ");
+    scanf("%s", new_car.sold_date);
+
+    // Ensure the new entry starts on a new line
+    fprintf(file, "\n%d, %s, %s, %s, %s, %.2f, %d, %d, %d, %s",
+            new_car.car_id, new_car.model_name, new_car.color, new_car.fuel_type,
+            new_car.car_type, new_car.price, new_car.sold_cars,
+            new_car.available_cars, new_car.required_stock, new_car.sold_date);
+
+    fclose(file);
+    printf("Car added successfully to %s!\n", filename);
+}
+
+// Function to select the showroom and add a car
+void add_car()
+{
+    int choice;
+    printf("Select showroom to add car:\n");
+    printf("1. Showroom 1\n");
+    printf("2. Showroom 2\n");
+    printf("3. Showroom 3\n");
+    printf("Enter choice: ");
+    scanf("%d", &choice);
+
+    switch (choice)
+    {
+    case 1:
+        add_car_to_showroom("showroom1_cars.txt");
+        break;
+    case 2:
+        add_car_to_showroom("showroom2_cars.txt");
+        break;
+    case 3:
+        add_car_to_showroom("showroom3_cars.txt");
+        break;
+    default:
+        printf("Invalid choice!\n");
+    }
+}
+
 int main()
 {
     showroom showrooms[NUM_SHOWROOMS] = {0}; // Initialize all showrooms
@@ -1040,7 +1111,8 @@ int main()
         printf("13. Find total loan amount pending for a salesperson\n");
         printf("14. Sales of specific model in given duration of dates\n");
         printf("15. Add Salesperson\n");
-        printf("16. Exit\n");
+        printf("16. Add Car\n");
+        printf("17. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -1250,6 +1322,10 @@ int main()
             break;
 
         case 16:
+            add_car();
+            break;
+
+        case 17:
             // Exit the program
             printf("Exiting the program.\n");
             choice = 10;

@@ -3,3 +3,4 @@
 3, Ford, Red, Gasoline, Coupe, 55000, 8, 2, 6, 2024/02/05
 4, BMW, Blue, Diesel, SUV, 60000, 12, 4, 8, 2023/12/10
 5, Audi, Gray, Gasoline, Sedan, 40000, 9, 3, 6, 2024/01/30
+6, Brezza, Red, Petrol, Sedan, 90000.00, 20, 5, 10, 2024/04/20
