@@ -1067,6 +1067,85 @@ void add_car()
     }
 }
 
+#include <stdio.h>
+#include <stdlib.h>
+
+void save_customer_to_file(const char *filename, customer *cust)
+{
+    FILE *file = fopen(filename, "a"); // Open file in append mode
+    if (!file)
+    {
+        perror("Error opening customer file");
+    }
+    else
+    {
+        fprintf(file, "%d, %s, %d, %d, %s, %s, %s, %s, %.2f, %.2f, %s\n",
+                cust->customer_id, cust->name, cust->registration_no, cust->car_id,
+                cust->mobile_no, cust->address, cust->prev_service_date, cust->next_service_date,
+                cust->actual_amt_to_pay, cust->emi, cust->insurance_eval_date);
+        fclose(file);
+    }
+}
+
+// Function to add a customer to a showroom
+void add_customer_to_showroom(showroom *showrooms)
+{
+    int showroom_id;
+    printf("Enter showroom number (1-%d): ", NUM_SHOWROOMS);
+    scanf("%d", &showroom_id);
+
+    if (showroom_id < 1 || showroom_id > NUM_SHOWROOMS)
+    {
+        printf("Invalid showroom number!\n");
+    }
+    else
+    {
+        int id, reg_no, car_id;
+        char name[MAX_STRING_LEN], address[MAX_STRING_LEN], mobile[15];
+        char prev_service[11], next_service[11], insurance_eval[11];
+        float actual_amt, emi;
+
+        printf("Enter Customer ID: ");
+        scanf("%d", &id);
+        printf("Enter Name: ");
+        scanf(" %[^\n]", name);
+        printf("Enter Registration Number: ");
+        scanf("%d", &reg_no);
+        printf("Enter Car ID: ");
+        scanf("%d", &car_id);
+        printf("Enter Mobile Number: ");
+        scanf("%s", mobile);
+        printf("Enter Address: ");
+        scanf(" %[^\n]", address);
+        printf("Enter Previous Service Date (YYYY-MM-DD): ");
+        scanf("%s", prev_service);
+        printf("Enter Next Service Date (YYYY-MM-DD): ");
+        scanf("%s", next_service);
+        printf("Enter Actual Amount to Pay: ");
+        scanf("%f", &actual_amt);
+        printf("Enter EMI: ");
+        scanf("%f", &emi);
+        printf("Enter Insurance Evaluation Date (YYYY-MM-DD): ");
+        scanf("%s", insurance_eval);
+
+        // Create the new customer
+        customer *new_cust = create_customer(id, name, reg_no, car_id, mobile,
+                                             address, prev_service, next_service,
+                                             actual_amt, emi, insurance_eval);
+
+        // Insert into linked list
+        showrooms[showroom_id - 1].customer_list = insert_customer_end(showrooms[showroom_id - 1].customer_list, new_cust);
+
+        // Save to file
+        char filename[50];
+        sprintf(filename, "showroom%d_customers.txt", showroom_id);
+        save_customer_to_file(filename, new_cust);
+
+        printf("Customer added successfully to showroom %d!\n", showroom_id);
+    }
+}
+
+
 int main()
 {
     showroom showrooms[NUM_SHOWROOMS] = {0}; // Initialize all showrooms
@@ -1112,7 +1191,8 @@ int main()
         printf("14. Sales of specific model in given duration of dates\n");
         printf("15. Add Salesperson\n");
         printf("16. Add Car\n");
-        printf("17. Exit\n");
+        printf("17. Add Customer\n");
+        printf("18. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -1324,8 +1404,12 @@ int main()
         case 16:
             add_car();
             break;
-
+        
         case 17:
+            add_customer_to_showroom(showrooms);
+            break;
+
+        case 18:
             // Exit the program
             printf("Exiting the program.\n");
             choice = 10;
