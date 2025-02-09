@@ -164,6 +164,12 @@ void print_car_list(car *car_list)
     }
 }
 
+// Function to compare two dates in YYYY/MM/DD format
+int compare_dates(const char *date1, const char *date2)
+{
+    return strcmp(date1, date2); // Lexicographical comparison works for this format
+}
+
 // Function to convert date string to an integer (YYYYMMDD format)
 int date_to_int(const char *date)
 {
@@ -266,6 +272,7 @@ void calculate_next_service_date(const char *purchase_date, char *next_service_d
 }
 
 // Function to check if the service is due
+
 int is_service_due(const char *next_service_date, const char *current_date)
 {
     return date_to_int(current_date) >= date_to_int(next_service_date);
@@ -279,13 +286,15 @@ void generate_service_alerts(customer *customer_list, const char *current_date)
     printf("\n--- Service Due Alerts ---\n");
     while (cust)
     {
-        char next_service_date[11];
-        calculate_next_service_date(cust->next_service_date, next_service_date);
-
-        if (is_service_due(next_service_date, current_date))
+        // Check if next_service_date is set
+        if (strlen(cust->next_service_date) > 0 && is_service_due(cust->next_service_date, current_date))
         {
             printf("Alert: Customer %s (ID: %d) needs a service. Next service date: %s\n",
-                   cust->name, cust->customer_id, next_service_date);
+                   cust->name, cust->customer_id, cust->next_service_date);
+        }
+        else
+        {
+            printf("No service due for Customer %s (ID: %d)\n", cust->name, cust->customer_id);
         }
 
         cust = cust->next;
@@ -391,34 +400,30 @@ void load_car_data(const char *filename, car **head)
 // Function to create a new customer node
 customer *create_customer(int customer_id, const char *name, int registration_no, int car_id,
                           const char *mobile_no, const char *address,
-                          double actual_amt_to_pay, double emi)
+                          const char *prev_service_date, const char *next_service_date,
+                          double actual_amt_to_pay, double emi, const char *insurance_eval_date)
 {
     customer *new_customer = (customer *)malloc(sizeof(customer));
-    customer *ans;
     if (new_customer == NULL)
     {
         printf("Memory allocation failed\n");
-        ans = NULL;
-    }
-    else
-    {
-
-        new_customer->customer_id = customer_id;
-        strcpy(new_customer->name, name);
-        new_customer->registration_no = registration_no;
-        new_customer->car_id = car_id;
-        strcpy(new_customer->mobile_no, mobile_no);
-        strcpy(new_customer->address, address);
-        strcpy(new_customer->prev_service_date, "");
-        strcpy(new_customer->next_service_date, "");
-        new_customer->actual_amt_to_pay = actual_amt_to_pay;
-        new_customer->emi = emi;
-        strcpy(new_customer->insurance_eval_date, "");
-        new_customer->next = NULL;
-        ans = new_customer;
+        return NULL;
     }
 
-    return ans;
+    new_customer->customer_id = customer_id;
+    strcpy(new_customer->name, name);
+    new_customer->registration_no = registration_no;
+    new_customer->car_id = car_id;
+    strcpy(new_customer->mobile_no, mobile_no);
+    strcpy(new_customer->address, address);
+    strcpy(new_customer->prev_service_date, prev_service_date);
+    strcpy(new_customer->next_service_date, next_service_date);
+    new_customer->actual_amt_to_pay = actual_amt_to_pay;
+    new_customer->emi = emi;
+    strcpy(new_customer->insurance_eval_date, insurance_eval_date);
+    new_customer->next = NULL;
+
+    return new_customer;
 }
 
 // Function to load customer data from a file
@@ -428,29 +433,29 @@ void load_customer_data(const char *filename, customer **head)
     if (!file)
     {
         perror("Error opening customer data file");
+        return;
     }
-    else
+
+    char buffer[512];
+    while (fgets(buffer, sizeof(buffer), file))
     {
+        int customer_id, registration_no, car_id;
+        double actual_amt_to_pay, emi;
+        char name[MAX_STRING_LEN], mobile_no[15], address[MAX_STRING_LEN];
+        char prev_service_date[11], next_service_date[11], insurance_eval_date[11];
 
-        char buffer[512];
-        while (fgets(buffer, sizeof(buffer), file))
+        if (sscanf(buffer, "%d, %99[^,], %d, %d, %14[^,], %99[^,], %10[^,], %10[^,], %lf, %lf, %10[^,]",
+                   &customer_id, name, &registration_no, &car_id, mobile_no, address,
+                   prev_service_date, next_service_date, &actual_amt_to_pay, &emi, insurance_eval_date) == 11)
         {
-            int customer_id, registration_no, car_id;
-            double actual_amt_to_pay, emi;
-            char name[MAX_STRING_LEN], mobile_no[15], address[MAX_STRING_LEN];
-
-            if (sscanf(buffer, "%d, %99[^,], %d, %d, %14[^,], %99[^,], %lf, %lf",
-                       &customer_id, name, &registration_no, &car_id, mobile_no, address,
-                       &actual_amt_to_pay, &emi) == 8)
-            {
-                customer *new_customer = create_customer(customer_id, name, registration_no, car_id,
-                                                         mobile_no, address, actual_amt_to_pay, emi);
-                *head = insert_customer_end(*head, new_customer);
-            }
+            customer *new_customer = create_customer(customer_id, name, registration_no, car_id,
+                                                     mobile_no, address, prev_service_date, next_service_date,
+                                                     actual_amt_to_pay, emi, insurance_eval_date);
+            *head = insert_customer_end(*head, new_customer);
         }
-
-        fclose(file);
     }
+
+    fclose(file);
 }
 
 // Function to create a new salesperson node with assigned customers
@@ -733,7 +738,6 @@ void merge_all_data(showroom *showrooms, car **all_cars, customer **all_customer
     }
 }
 
-
 void find_most_popular_car_model(car *all_cars, SalesHistory *sales_data, int num_models)
 {
     char most_popular_model[MAX_STRING_LEN];
@@ -782,12 +786,6 @@ void find_top_salesperson(salesperson *all_salespersons)
     {
         printf("No salesperson data available.\n");
     }
-}
-
-// Function to compare two dates in YYYY/MM/DD format
-int compare_dates(const char *date1, const char *date2)
-{
-    return strcmp(date1, date2); // Lexicographical comparison works for this format
 }
 
 // Function to split the linked list into two halves
@@ -887,6 +885,26 @@ float get_total_loan_pending(salesperson *head, const char *salesperson_name)
     return ans;
 }
 
+float find_sales_figures(car *car_list, const char *model_name, const char *start_date, const char *end_date)
+{
+    float total_sales = 0;
+    int start = date_to_int(start_date);
+    int end = date_to_int(end_date);
+
+    car *current = car_list;
+    while (current)
+    {
+        int sale_date = date_to_int(current->sold_date);
+        if (strcmp(current->model_name, model_name) == 0 && sale_date >= start && sale_date <= end)
+        {
+            total_sales += current->price * current->sold_cars;
+        }
+        current = current->next;
+    }
+
+    return total_sales;
+}
+
 int main()
 {
     showroom showrooms[NUM_SHOWROOMS] = {0}; // Initialize all showrooms
@@ -929,7 +947,8 @@ int main()
         printf("11. Find Top Salesperson\n");
         printf("12. Sort according to car sold date\n");
         printf("13. Find total loan amount pending for a salesperson\n");
-        printf("14. Exit\n");
+        printf("14. Sales of specific model in given duration of dates\n");
+        printf("15. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -1116,6 +1135,25 @@ int main()
         break;
 
         case 14:
+        {
+            char model_name[MAX_STRING_LEN];
+            char start_date[11], end_date[11];
+
+            printf("Enter car model name: ");
+            scanf("%s", model_name);
+            printf("Enter start date (YYYY/MM/DD): ");
+            scanf("%s", start_date);
+            printf("Enter end date (YYYY/MM/DD): ");
+            scanf("%s", end_date);
+
+            merge_all_data(showrooms, &all_cars, &all_customers, &all_salespersons);
+            float total_sales = find_sales_figures(all_cars, model_name, start_date, end_date);
+
+            printf("Total sales for %s from %s to %s: $%.2f\n", model_name, start_date, end_date, total_sales);
+        }
+        break;
+
+        case 15:
             // Exit the program
             printf("Exiting the program.\n");
             choice = 10;
