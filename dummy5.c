@@ -922,6 +922,8 @@ void save_salesperson_to_file(const char *filename, salesperson *sp)
     }
     else
     {
+        // Check if the file is empty
+        
         fprintf(file, "%d, %s, %s, %s, %.2f, %.2f, %.2f, %d\n",
                 sp->salesperson_id, sp->name_salesperson, sp->DOB, sp->address,
                 sp->sales_target, sp->sales_achieved, sp->commission,
@@ -936,7 +938,7 @@ void add_salesperson_to_showroom(showroom *showrooms)
     int showroom_id;
     printf("Enter showroom number (1-%d): ", NUM_SHOWROOMS);
     scanf("%d", &showroom_id);
-    
+
     if (showroom_id < 1 || showroom_id > NUM_SHOWROOMS)
     {
         printf("Invalid showroom number!\n");
@@ -992,7 +994,6 @@ void add_salesperson_to_showroom(showroom *showrooms)
         printf("Salesperson added successfully to showroom %d!\n", showroom_id);
     }
 }
-
 
 int main()
 {
