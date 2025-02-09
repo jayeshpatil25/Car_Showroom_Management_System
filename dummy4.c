@@ -719,11 +719,20 @@ void merge_all_data(showroom *showrooms, car **all_cars, customer **all_customer
 {
     for (int i = 0; i < NUM_SHOWROOMS; i++)
     {
-        merge_sorted_car_lists(all_cars, *all_cars, showrooms[i].car_list);
-        merge_sorted_customer_lists(all_customers, *all_customers, showrooms[i].customer_list);
-        merge_sorted_salesperson_lists(all_salespersons, *all_salespersons, showrooms[i].salesperson_list);
+        car *merged_cars = NULL;
+        merge_sorted_car_lists(&merged_cars, *all_cars, showrooms[i].car_list);
+        *all_cars = merged_cars;
+
+        customer *merged_customers = NULL;
+        merge_sorted_customer_lists(&merged_customers, *all_customers, showrooms[i].customer_list);
+        *all_customers = merged_customers;
+
+        salesperson *merged_salespersons = NULL;
+        merge_sorted_salesperson_lists(&merged_salespersons, *all_salespersons, showrooms[i].salesperson_list);
+        *all_salespersons = merged_salespersons;
     }
 }
+
 
 void find_most_popular_car_model(car *all_cars, SalesHistory *sales_data, int num_models)
 {
@@ -1074,7 +1083,6 @@ int main()
 
         case 10:
             merge_all_data(showrooms, &all_cars, &all_customers, &all_salespersons);
-
             // Display merged car list
             printf("\nMerged Car List:\n");
             print_car_list(all_cars);
