@@ -350,20 +350,27 @@ void print_service_bill(ServiceBill *bill)
     printf("--------------------------\n");
 }
 
-car *create_car(int car_id, const char *model_name, const char *color, const char *fuel_type, const char *car_type, float price, const char *sold_date)
+car *create_car(int car_id, const char *model_name, const char *color, const char *fuel_type, const char *car_type, float price, int sold_cars, int available_cars, int required_stock, const char *sold_date)
 {
     car *new_car = (car *)malloc(sizeof(car));
+    if (!new_car)
+    {
+        perror("Memory allocation failed");
+        return NULL;
+    }
+
     new_car->car_id = car_id;
     strcpy(new_car->model_name, model_name);
     strcpy(new_car->color, color);
     strcpy(new_car->fuel_type, fuel_type);
     strcpy(new_car->car_type, car_type);
     new_car->price = price;
-    new_car->sold_cars = 0;
-    new_car->available_cars = 0;
-    new_car->required_stock = 0;
+    new_car->sold_cars = sold_cars;
+    new_car->available_cars = available_cars;
+    new_car->required_stock = required_stock;
     strcpy(new_car->sold_date, sold_date);
     new_car->next = NULL;
+
     return new_car;
 }
 
@@ -374,29 +381,29 @@ void load_car_data(const char *filename, car **head)
     if (!file)
     {
         perror("Error opening car data file");
+        return;
     }
-    else
+
+    char buffer[512];
+    while (fgets(buffer, sizeof(buffer), file))
     {
+        int car_id, sold_cars, available_cars, required_stock;
+        char model_name[MAX_STRING_LEN], color[MAX_STRING_LEN], fuel_type[MAX_STRING_LEN], car_type[MAX_STRING_LEN], sold_date[11];
+        float price;
 
-        char buffer[512];
-        while (fgets(buffer, sizeof(buffer), file))
+        if (sscanf(buffer, "%d, %99[^,], %99[^,], %99[^,], %99[^,], %f, %d, %d, %d, %10s",
+                   &car_id, model_name, color, fuel_type, car_type, &price, &sold_cars, &available_cars, &required_stock, sold_date) == 10)
         {
-            int car_id;
-            char model_name[MAX_STRING_LEN], color[MAX_STRING_LEN], fuel_type[MAX_STRING_LEN], car_type[MAX_STRING_LEN], sold_date[11];
-            float price;
-
-            if (sscanf(buffer, "%d, %99[^,], %99[^,], %99[^,], %99[^,], %f, %10s",
-                       &car_id, model_name, color, fuel_type, car_type, &price, sold_date) == 7)
+            car *new_car = create_car(car_id, model_name, color, fuel_type, car_type, price, sold_cars, available_cars, required_stock, sold_date);
+            if (new_car)
             {
-                car *new_car = create_car(car_id, model_name, color, fuel_type, car_type, price, sold_date);
                 *head = insert_end(*head, new_car);
             }
         }
-
-        fclose(file);
     }
-}
 
+    fclose(file);
+}
 // Function to create a new customer node
 customer *create_customer(int customer_id, const char *name, int registration_no, int car_id,
                           const char *mobile_no, const char *address,
