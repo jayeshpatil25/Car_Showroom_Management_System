@@ -1067,9 +1067,6 @@ void add_car()
     }
 }
 
-#include <stdio.h>
-#include <stdlib.h>
-
 void save_customer_to_file(const char *filename, customer *cust)
 {
     FILE *file = fopen(filename, "a"); // Open file in append mode
