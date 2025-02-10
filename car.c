@@ -453,16 +453,27 @@ void load_salesperson_data(const char *filename, salesperson **head, customer *c
                 // Find the customer from customer_list
                 customer *assigned_customer = NULL;
                 customer *temp = customer_list;
+                customer *tail=NULL;
                 while (temp)
                 {
                     if (temp->customer_id == customer_id)
                     {
-                        assigned_customer = temp;
-                        break;
+                        if(assigned_customer == NULL)
+                        {
+                            assigned_customer = temp;
+                            tail = assigned_customer;
+                            tail->next = NULL;
+                        }
+                        else
+                        {
+                            tail->next = temp;
+                            tail = tail->next;
+                            tail->next=NULL;
+                        }
                     }
                     temp = temp->next;
                 }
-
+                
                 // Create salesperson with assigned customer
                 salesperson *new_sp = create_salesperson(salesperson_id, name_salesperson, DOB, address, sales_target, sales_achieved, commission, assigned_customer);
 
