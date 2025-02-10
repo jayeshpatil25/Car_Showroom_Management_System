@@ -1142,6 +1142,74 @@ void add_customer_to_showroom(showroom *showrooms)
     }
 }
 
+salesperson *delete_salesperson(salesperson *head, int id)
+{
+    salesperson *current = head, *prev = NULL;
+    while (current)
+    {
+        if (current->salesperson_id == id)
+        {
+            if (prev)
+                prev->next = current->next;
+            else
+                head = current->next;
+            
+            free(current);
+            return head;
+        }
+        prev = current;
+        current = current->next;
+    }
+    printf("Salesperson ID %d not found!\n", id);
+    return head;
+}
+void save_salespersons_to_file(const char *filename, salesperson *head)
+{
+    FILE *file = fopen(filename, "w"); // Overwrite file
+    if (!file)
+    {
+        perror("Error opening file");
+        return;
+    }
+
+    salesperson *current = head;
+    while (current)
+    {
+        fprintf(file, "%d, %s, %s, %s, %.2f, %.2f, %.2f\n",
+                current->salesperson_id, current->name_salesperson, current->DOB, current->address,
+                current->sales_target, current->sales_achieved, current->commission);
+        current = current->next;
+    }
+
+    fclose(file);
+}
+
+void delete_salesperson_from_showroom(showroom *showrooms)
+{
+    int showroom_id, sp_id;
+    printf("Enter showroom number (1-%d): ", NUM_SHOWROOMS);
+    scanf("%d", &showroom_id);
+
+    if (showroom_id < 1 || showroom_id > NUM_SHOWROOMS)
+    {
+        printf("Invalid showroom number!\n");
+        return;
+    }
+
+    printf("Enter Salesperson ID to delete: ");
+    scanf("%d", &sp_id);
+
+    showroom *selected_showroom = &showrooms[showroom_id - 1];
+    selected_showroom->salesperson_list = delete_salesperson(selected_showroom->salesperson_list, sp_id);
+
+    // Update file after deletion
+    char filename[50];
+    sprintf(filename, "showroom%d_salesperson.txt", showroom_id);
+    save_salespersons_to_file(filename, selected_showroom->salesperson_list);
+
+    printf("Salesperson with ID %d deleted successfully from showroom %d!\n", sp_id, showroom_id);
+}
+
 
 int main()
 {
@@ -1188,8 +1256,9 @@ int main()
         printf("14. Sales of specific model in given duration of dates\n");
         printf("15. Add Salesperson\n");
         printf("16. Add Car\n");
-        printf("17. Add Customer\n");
-        printf("18. Exit\n");
+        printf("18. Add Customer\n");
+        printf("19. Delete Salesperson");
+        printf("19. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -1412,6 +1481,11 @@ int main()
             choice = 10;
             break;
 
+        case 19:
+            printf("Delete salesperson\n");
+            delete_salesperson_from_showroom(showrooms);
+            break;
+
         default:
             printf("Invalid choice! Please try again.\n");
         }
@@ -1427,3 +1501,5 @@ int main()
 
     return 0;
 }
+
+

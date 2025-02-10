@@ -1086,3 +1086,212 @@ void add_customer_to_showroom(showroom *showrooms)
     }
 }
 
+salesperson *delete_salesperson(salesperson *head, int id)
+{
+    salesperson *current = head, *prev = NULL;
+    while (current)
+    {
+        if (current->salesperson_id == id)
+        {
+            if (prev)
+                prev->next = current->next;
+            else
+                head = current->next;
+            
+            free(current);
+            return head;
+        }
+        prev = current;
+        current = current->next;
+    }
+    printf("Salesperson ID %d not found!\n", id);
+    return head;
+}
+void save_salespersons_to_file(const char *filename, salesperson *head)
+{
+    FILE *file = fopen(filename, "w"); // Overwrite file
+    if (!file)
+    {
+        perror("Error opening file");
+        return;
+    }
+
+    salesperson *current = head;
+    while (current)
+    {
+        fprintf(file, "%d, %s, %s, %s, %.2f, %.2f, %.2f\n",
+                current->salesperson_id, current->name_salesperson, current->DOB, current->address,
+                current->sales_target, current->sales_achieved, current->commission);
+        current = current->next;
+    }
+
+    fclose(file);
+}
+
+void delete_salesperson_from_showroom(showroom *showrooms)
+{
+    int showroom_id, sp_id;
+    printf("Enter showroom number (1-%d): ", NUM_SHOWROOMS);
+    scanf("%d", &showroom_id);
+
+    if (showroom_id < 1 || showroom_id > NUM_SHOWROOMS)
+    {
+        printf("Invalid showroom number!\n");
+        return;
+    }
+
+    printf("Enter Salesperson ID to delete: ");
+    scanf("%d", &sp_id);
+
+    showroom *selected_showroom = &showrooms[showroom_id - 1];
+    selected_showroom->salesperson_list = delete_salesperson(selected_showroom->salesperson_list, sp_id);
+
+    // Update file after deletion
+    char filename[50];
+    sprintf(filename, "showroom%d_salesperson.txt", showroom_id);
+    save_salespersons_to_file(filename, selected_showroom->salesperson_list);
+
+    printf("Salesperson with ID %d deleted successfully from showroom %d!\n", sp_id, showroom_id);
+}
+
+car *delete_car(car *head, int car_id)
+{
+    car *current = head, *prev = NULL;
+    while (current)
+    {
+        if (current->car_id == car_id)
+        {
+            if (prev)
+                prev->next = current->next;
+            else
+                head = current->next;
+
+            free(current);
+            return head;
+        }
+        prev = current;
+        current = current->next;
+    }
+    printf("Car ID %d not found!\n", car_id);
+    return head;
+}
+
+void save_cars_to_file(const char *filename, car *head)
+{
+    FILE *file = fopen(filename, "w");
+    if (!file)
+    {
+        perror("Error opening file");
+        return;
+    }
+
+    car *current = head;
+    while (current)
+    {
+        fprintf(file, "%d, %s, %s, %s, %s, %.2f, %d, %d, %d, %s\n",
+                current->car_id, current->model_name, current->color, current->fuel_type,
+                current->car_type, current->price, current->sold_cars,
+                current->available_cars, current->required_stock, current->sold_date);
+        current = current->next;
+    }
+
+    fclose(file);
+}
+
+
+void delete_car_from_showroom(showroom *showrooms)
+{
+    int showroom_id, car_id;
+    printf("Enter showroom number (1-%d): ", NUM_SHOWROOMS);
+    scanf("%d", &showroom_id);
+
+    if (showroom_id < 1 || showroom_id > NUM_SHOWROOMS)
+    {
+        printf("Invalid showroom number!\n");
+        return;
+    }
+
+    printf("Enter Car ID to delete: ");
+    scanf("%d", &car_id);
+
+    showroom *selected_showroom = &showrooms[showroom_id - 1];
+    selected_showroom->car_list = delete_car(selected_showroom->car_list, car_id);
+
+    // Update file after deletion
+    char filename[50];
+    sprintf(filename, "showroom%d_cars.txt", showroom_id);
+    save_cars_to_file(filename, selected_showroom->car_list);
+
+    printf("Car with ID %d deleted successfully from showroom %d!\n", car_id, showroom_id);
+}
+
+customer *delete_customer(customer *head, int customer_id)
+{
+    customer *current = head, *prev = NULL;
+    while (current)
+    {
+        if (current->customer_id == customer_id)
+        {
+            if (prev)
+                prev->next = current->next;
+            else
+                head = current->next;
+
+            free(current);
+            return head;
+        }
+        prev = current;
+        current = current->next;
+    }
+    printf("Customer ID %d not found!\n", customer_id);
+    return head;
+}
+
+void save_customers_to_file(const char *filename, customer *head)
+{
+    FILE *file = fopen(filename, "w");
+    if (!file)
+    {
+        perror("Error opening file");
+        return;
+    }
+
+    customer *current = head;
+    while (current)
+    {
+        fprintf(file, "%d, %s, %d, %d, %s, %s, %s, %s, %.2f, %.2f, %s\n",
+                current->customer_id, current->name, current->registration_no, current->car_id,
+                current->mobile_no, current->address, current->prev_service_date, current->next_service_date,
+                current->actual_amt_to_pay, current->emi, current->insurance_eval_date);
+        current = current->next;
+    }
+
+    fclose(file);
+}
+
+
+void delete_customer_from_showroom(showroom *showrooms)
+{
+    int showroom_id, customer_id;
+    printf("Enter showroom number (1-%d): ", NUM_SHOWROOMS);
+    scanf("%d", &showroom_id);
+
+    if (showroom_id < 1 || showroom_id > NUM_SHOWROOMS)
+    {
+        printf("Invalid showroom number!\n");
+        return;
+    }
+
+    printf("Enter Customer ID to delete: ");
+    scanf("%d", &customer_id);
+
+    showroom *selected_showroom = &showrooms[showroom_id - 1];
+    selected_showroom->customer_list = delete_customer(selected_showroom->customer_list, customer_id);
+
+    // Update file after deletion
+    char filename[50];
+    sprintf(filename, "showroom%d_customers.txt", showroom_id);
+    save_customers_to_file(filename, selected_showroom->customer_list);
+
+    printf("Customer with ID %d deleted successfully from showroom %d!\n", customer_id, showroom_id);
+}
