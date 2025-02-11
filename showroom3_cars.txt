@@ -3,3 +3,4 @@
 13, Volkswagen Passat, Gray, Gasoline, Sedan, 26000, 9, 3, 6, 2023/11/05
 14, Jeep Grand Cherokee, Black, Gasoline, SUV, 55000, 8, 2, 6, 2024/02/03
 15, Porsche 911, Yellow, Gasoline, Coupe, 90000, 5, 1, 4, 2024/01/20
+20, Wagnor, Blue, Diesel, Sedan, 50000.00, 0, 0, 40, 0000/00/00

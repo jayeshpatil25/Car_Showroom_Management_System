@@ -1107,6 +1107,7 @@ salesperson *delete_salesperson(salesperson *head, int id)
     printf("Salesperson ID %d not found!\n", id);
     return head;
 }
+
 void save_salespersons_to_file(const char *filename, salesperson *head)
 {
     FILE *file = fopen(filename, "w"); // Overwrite file

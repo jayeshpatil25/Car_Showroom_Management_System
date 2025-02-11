@@ -136,5 +136,15 @@ void add_car();
 void save_customer_to_file(const char *filename, customer *cust);
 void add_customer_to_showroom(showroom *showrooms);
 
+salesperson *delete_salesperson(salesperson *head, int id);
+void save_salespersons_to_file(const char *filename, salesperson *head);
+void delete_salesperson_from_showroom(showroom *showrooms);
+car *delete_car(car *head, int car_id);
+void save_cars_to_file(const char *filename, car *head);
+void delete_car_from_showroom(showroom *showrooms);
+customer *delete_customer(customer *head, int customer_id);
+void save_customers_to_file(const char *filename, customer *head);
+void delete_customer_from_showroom(showroom *showrooms);
+
 
 #endif

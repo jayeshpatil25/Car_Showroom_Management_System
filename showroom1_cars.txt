@@ -4,3 +4,5 @@
 4, BMW, Blue, Diesel, SUV, 60000, 12, 4, 8, 2023/12/10
 5, Audi, Gray, Gasoline, Sedan, 40000, 9, 3, 6, 2024/01/30
 6, Brezza, Red, Petrol, Sedan, 90000.00, 20, 5, 10, 2024/04/20
+10, swift, red, petrol, sedan, 24324.00, 0, 0, 232, 0000/00/00
+50, creta, red, dnsf, fewf, 42343.00, 0, 0, 43, 0000/00/00
