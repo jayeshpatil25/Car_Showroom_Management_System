@@ -1,9 +1,6 @@
 // Vinit More BT23CSE083 R4
 // Jayesh Patil BT23CSE078 R4
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "car.h"
 
 int main()
@@ -52,10 +49,7 @@ int main()
         printf("15. Add Salesperson\n");
         printf("16. Add Car\n");
         printf("17. Add Customer\n");
-        printf("18 Delete Salesperson\n");
-        printf("19. Delete Car\n");
-        printf("20. Delete Customer\n");
-        printf("21. Exit\n");
+        printf("18. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -253,8 +247,8 @@ int main()
             printf("Enter end date (YYYY/MM/DD): ");
             scanf("%s", end_date);
 
-            merge_all_data(showrooms, &all_cars, &all_customers, &all_salespersons);
-            float total_sales = find_sales_figures(all_cars, model_name, start_date, end_date);
+            // merge_all_data(showrooms, &all_cars, &all_customers, &all_salespersons);
+            float total_sales = find_sales_figures(showrooms[0].car_list, model_name, start_date, end_date);
 
             printf("Total sales for %s from %s to %s: $%.2f\n", model_name, start_date, end_date, total_sales);
         }
@@ -267,25 +261,12 @@ int main()
         case 16:
             add_car();
             break;
-
+        
         case 17:
-            add_customer_to_showroom(showrooms);
+            add_customer_to_showroom(showrooms, 3);
             break;
 
         case 18:
-            delete_salesperson_from_showroom(showrooms);
-            break;
-
-        case 19:
-            delete_car_from_showroom(showrooms);
-            break;
-
-        case 20: 
-            delete_customer_from_showroom(showrooms);
-            break;
-
-
-        case 21:
             // Exit the program
             printf("Exiting the program.\n");
             choice = 10;
