@@ -2,11 +2,7 @@
 // Jayesh Patil BT23CSE078 R4
 
 #include "car.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
+// Function to insert a car at the end of the linked list
 car *insert_end(car *head, car *new_car)
 {
     car *ans;
@@ -157,46 +153,46 @@ int is_date_in_range(const char *date, const char *start_date, const char *end_d
 }
 
 // Function to find the sales figures of a specific model within a date range
-// int find_sales(showroom *showrooms, int showroom_count, const char *model, const char *start_date, const char *end_date)
-// {
-//     int total_sales = 0;
-//     for (int i = 0; i < showroom_count; i++)
-//     {
-//         car *current = showrooms[i].car_list;
-//         while (current)
-//         {
-//             if (strcmp(current->model_name, model) == 0 && is_date_in_range(current->sold_date, start_date, end_date))
-//             {
-//                 total_sales += current->sold_cars;
-//             }
-//             current = current->next;
-//         }
-//     }
-//     return total_sales;
-// }
+int find_sales(showroom *showrooms, int showroom_count, const char *model, const char *start_date, const char *end_date)
+{
+    int total_sales = 0;
+    for (int i = 0; i < showroom_count; i++)
+    {
+        car *current = showrooms[i].car_list;
+        while (current)
+        {
+            if (strcmp(current->model_name, model) == 0 && is_date_in_range(current->sold_date, start_date, end_date))
+            {
+                total_sales += current->sold_cars;
+            }
+            current = current->next;
+        }
+    }
+    return total_sales;
+}
 
 // Function to calculate the next service date (6 months after purchase)
-// void calculate_next_service_date(const char *purchase_date, char *next_service_date)
-// {
-//     int day, month, year;
+void calculate_next_service_date(const char *purchase_date, char *next_service_date)
+{
+    int day, month, year;
 
-//     if (sscanf(purchase_date, "%d/%d/%d", &day, &month, &year) != 3)
-//     {
-//         strcpy(next_service_date, "Invalid Date");
-//     }
-//     else
-//     {
+    if (sscanf(purchase_date, "%d/%d/%d", &day, &month, &year) != 3)
+    {
+        strcpy(next_service_date, "Invalid Date");
+    }
+    else
+    {
 
-//         month += 6; // Add six months
-//         if (month > 12)
-//         {
-//             month -= 12;
-//             year++; // Move to next year if needed
-//         }
+        month += 6; // Add six months
+        if (month > 12)
+        {
+            month -= 12;
+            year++; // Move to next year if needed
+        }
 
-//         sprintf(next_service_date, "%02d/%02d/%04d", day, month, year);
-//     }
-// }
+        sprintf(next_service_date, "%02d/%02d/%04d", day, month, year);
+    }
+}
 
 // Function to check if the service is due
 
@@ -283,21 +279,20 @@ car *create_car(int car_id, const char *model_name, const char *color, const cha
     if (!new_car)
     {
         perror("Memory allocation failed");
+        return NULL;
     }
-    else
-    {
-        new_car->car_id = car_id;
-        strcpy(new_car->model_name, model_name);
-        strcpy(new_car->color, color);
-        strcpy(new_car->fuel_type, fuel_type);
-        strcpy(new_car->car_type, car_type);
-        new_car->price = price;
-        new_car->sold_cars = sold_cars;
-        new_car->available_cars = available_cars;
-        new_car->required_stock = required_stock;
-        strcpy(new_car->sold_date, sold_date);
-        new_car->next = NULL;
-    }
+
+    new_car->car_id = car_id;
+    strcpy(new_car->model_name, model_name);
+    strcpy(new_car->color, color);
+    strcpy(new_car->fuel_type, fuel_type);
+    strcpy(new_car->car_type, car_type);
+    new_car->price = price;
+    new_car->sold_cars = sold_cars;
+    new_car->available_cars = available_cars;
+    new_car->required_stock = required_stock;
+    strcpy(new_car->sold_date, sold_date);
+    new_car->next = NULL;
 
     return new_car;
 }
@@ -309,30 +304,28 @@ void load_car_data(const char *filename, car **head)
     if (!file)
     {
         perror("Error opening car data file");
+        return;
     }
-    else
+
+    char buffer[512];
+    while (fgets(buffer, sizeof(buffer), file))
     {
+        int car_id, sold_cars, available_cars, required_stock;
+        char model_name[MAX_STRING_LEN], color[MAX_STRING_LEN], fuel_type[MAX_STRING_LEN], car_type[MAX_STRING_LEN], sold_date[11];
+        float price;
 
-        char buffer[512];
-        while (fgets(buffer, sizeof(buffer), file))
+        if (sscanf(buffer, "%d, %99[^,], %99[^,], %99[^,], %99[^,], %f, %d, %d, %d, %10s",
+                   &car_id, model_name, color, fuel_type, car_type, &price, &sold_cars, &available_cars, &required_stock, sold_date) == 10)
         {
-            int car_id, sold_cars, available_cars, required_stock;
-            char model_name[MAX_STRING_LEN], color[MAX_STRING_LEN], fuel_type[MAX_STRING_LEN], car_type[MAX_STRING_LEN], sold_date[11];
-            float price;
-
-            if (sscanf(buffer, "%d, %99[^,], %99[^,], %99[^,], %99[^,], %f, %d, %d, %d, %10s",
-                       &car_id, model_name, color, fuel_type, car_type, &price, &sold_cars, &available_cars, &required_stock, sold_date) == 10)
+            car *new_car = create_car(car_id, model_name, color, fuel_type, car_type, price, sold_cars, available_cars, required_stock, sold_date);
+            if (new_car)
             {
-                car *new_car = create_car(car_id, model_name, color, fuel_type, car_type, price, sold_cars, available_cars, required_stock, sold_date);
-                if (new_car)
-                {
-                    *head = insert_end(*head, new_car);
-                }
+                *head = insert_end(*head, new_car);
             }
         }
-
-        fclose(file);
     }
+
+    fclose(file);
 }
 
 // Function to create a new customer node
@@ -345,22 +338,21 @@ customer *create_customer(int customer_id, const char *name, int registration_no
     if (new_customer == NULL)
     {
         printf("Memory allocation failed\n");
+        return NULL;
     }
-    else
-    {
-        new_customer->customer_id = customer_id;
-        strcpy(new_customer->name, name);
-        new_customer->registration_no = registration_no;
-        new_customer->car_id = car_id;
-        strcpy(new_customer->mobile_no, mobile_no);
-        strcpy(new_customer->address, address);
-        strcpy(new_customer->prev_service_date, prev_service_date);
-        strcpy(new_customer->next_service_date, next_service_date);
-        new_customer->actual_amt_to_pay = actual_amt_to_pay;
-        new_customer->emi = emi;
-        strcpy(new_customer->insurance_eval_date, insurance_eval_date);
-        new_customer->next = NULL;
-    }
+
+    new_customer->customer_id = customer_id;
+    strcpy(new_customer->name, name);
+    new_customer->registration_no = registration_no;
+    new_customer->car_id = car_id;
+    strcpy(new_customer->mobile_no, mobile_no);
+    strcpy(new_customer->address, address);
+    strcpy(new_customer->prev_service_date, prev_service_date);
+    strcpy(new_customer->next_service_date, next_service_date);
+    new_customer->actual_amt_to_pay = actual_amt_to_pay;
+    new_customer->emi = emi;
+    strcpy(new_customer->insurance_eval_date, insurance_eval_date);
+    new_customer->next = NULL;
 
     return new_customer;
 }
@@ -372,31 +364,29 @@ void load_customer_data(const char *filename, customer **head)
     if (!file)
     {
         perror("Error opening customer data file");
+        return;
     }
-    else
+
+    char buffer[512];
+    while (fgets(buffer, sizeof(buffer), file))
     {
+        int customer_id, registration_no, car_id;
+        double actual_amt_to_pay, emi;
+        char name[MAX_STRING_LEN], mobile_no[15], address[MAX_STRING_LEN];
+        char prev_service_date[11], next_service_date[11], insurance_eval_date[11];
 
-        char buffer[512]; //temporarily stores line for buffer
-        while (fgets(buffer, sizeof(buffer), file))
+        if (sscanf(buffer, "%d, %99[^,], %d, %d, %14[^,], %99[^,], %10[^,], %10[^,], %lf, %lf, %10[^,]",
+                   &customer_id, name, &registration_no, &car_id, mobile_no, address,
+                   prev_service_date, next_service_date, &actual_amt_to_pay, &emi, insurance_eval_date) == 11)
         {
-            int customer_id, registration_no, car_id;
-            double actual_amt_to_pay, emi;
-            char name[MAX_STRING_LEN], mobile_no[15], address[MAX_STRING_LEN];
-            char prev_service_date[11], next_service_date[11], insurance_eval_date[11];
-
-            if (sscanf(buffer, "%d, %99[^,], %d, %d, %14[^,], %99[^,], %10[^,], %10[^,], %lf, %lf, %10[^,]",
-                       &customer_id, name, &registration_no, &car_id, mobile_no, address,
-                       prev_service_date, next_service_date, &actual_amt_to_pay, &emi, insurance_eval_date) == 11)
-            {
-                customer *new_customer = create_customer(customer_id, name, registration_no, car_id,
-                                                         mobile_no, address, prev_service_date, next_service_date,
-                                                         actual_amt_to_pay, emi, insurance_eval_date);
-                *head = insert_customer_end(*head, new_customer);
-            }
+            customer *new_customer = create_customer(customer_id, name, registration_no, car_id,
+                                                     mobile_no, address, prev_service_date, next_service_date,
+                                                     actual_amt_to_pay, emi, insurance_eval_date);
+            *head = insert_customer_end(*head, new_customer);
         }
-
-        fclose(file);
     }
+
+    fclose(file);
 }
 
 // Function to create a new salesperson node with assigned customers
@@ -453,27 +443,16 @@ void load_salesperson_data(const char *filename, salesperson **head, customer *c
                 // Find the customer from customer_list
                 customer *assigned_customer = NULL;
                 customer *temp = customer_list;
-                customer *tail=NULL;
                 while (temp)
                 {
                     if (temp->customer_id == customer_id)
                     {
-                        if(assigned_customer == NULL)
-                        {
-                            assigned_customer = temp;
-                            tail = assigned_customer;
-                            tail->next = NULL;
-                        }
-                        else
-                        {
-                            tail->next = temp;
-                            tail = tail->next;
-                            tail->next=NULL;
-                        }
+                        assigned_customer = temp;
+                        break;
                     }
                     temp = temp->next;
                 }
-                
+
                 // Create salesperson with assigned customer
                 salesperson *new_sp = create_salesperson(salesperson_id, name_salesperson, DOB, address, sales_target, sales_achieved, commission, assigned_customer);
 
@@ -840,14 +819,11 @@ float get_total_loan_pending(salesperson *head, const char *salesperson_name)
 float find_sales_figures(car *car_list, const char *model_name, const char *start_date, const char *end_date)
 {
     float total_sales = 0;
-    int start = date_to_int(start_date);
-    int end = date_to_int(end_date);
 
     car *current = car_list;
     while (current)
     {
-        int sale_date = date_to_int(current->sold_date);
-        if (strcmp(current->model_name, model_name) == 0 && sale_date >= start && sale_date <= end)
+        if (strcmp(current->model_name, model_name) == 0 && (compare_dates(start_date, current->sold_date) <=0) && compare_dates(current->sold_date, end_date) <= 0)
         {
             total_sales += current->price * current->sold_cars;
         }
@@ -940,41 +916,68 @@ void add_salesperson_to_showroom(showroom *showrooms)
     }
 }
 
-// Function to add a car to a showroom file (appends on a new line)
-void add_car_to_showroom(const char *filename)
-{
-    FILE *file = fopen(filename, "a"); // Open file in append mode
-    if (!file)
-    {
+// Function to check if a car ID already exists in the file
+int car_id_exists(const char *filename, int car_id) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        return 0; // File does not exist, so the car ID cannot exist
+    }
+
+    car existing_car;
+    while (fscanf(file, "%d, %49[^,], %19[^,], %19[^,], %19[^,], %f, %d, %d, %d, %10s",
+                  &existing_car.car_id, existing_car.model_name, existing_car.color,
+                  existing_car.fuel_type, existing_car.car_type, &existing_car.price,
+                  &existing_car.sold_cars, &existing_car.available_cars,
+                  &existing_car.required_stock, existing_car.sold_date) == 10) {
+        if (existing_car.car_id == car_id) {
+            fclose(file);
+            return 1; // Car ID found
+        }
+    }
+
+    fclose(file);
+    return 0; // Car ID not found
+}
+
+// Function to add a new car to the showroom file
+void add_car_to_showroom(const char *filename) {
+    FILE *file = fopen(filename, "a+"); // Open file for reading & appending
+    if (!file) {
         perror("Error opening file for writing");
         return;
     }
 
     car new_car;
-
+    
     printf("Enter car details:\n");
     printf("Car ID: ");
     scanf("%d", &new_car.car_id);
+
+    // Check if the car ID already exists
+    if (car_id_exists(filename, new_car.car_id)) {
+        printf("Error: Car ID %d already exists in %s. Try again with a unique ID.\n", new_car.car_id, filename);
+        fclose(file);
+        return;
+    }
+
     printf("Model Name: ");
-    scanf(" %[^\n]", new_car.model_name);
+    scanf(" %49[^\n]", new_car.model_name);
     printf("Color: ");
-    scanf(" %[^\n]", new_car.color);
+    scanf(" %19[^\n]", new_car.color);
     printf("Fuel Type: ");
-    scanf(" %[^\n]", new_car.fuel_type);
+    scanf(" %19[^\n]", new_car.fuel_type);
     printf("Car Type: ");
-    scanf(" %[^\n]", new_car.car_type);
+    scanf(" %19[^\n]", new_car.car_type);
     printf("Price: ");
     scanf("%f", &new_car.price);
-    printf("Sold Cars: ");
-    scanf("%d", &new_car.sold_cars);
-    printf("Available Cars: ");
-    scanf("%d", &new_car.available_cars);
+    new_car.sold_cars = 0;
+    new_car.available_cars = 0;
     printf("Required Stock: ");
     scanf("%d", &new_car.required_stock);
-    printf("Sold Date (YYYY/MM/DD): ");
-    scanf("%s", new_car.sold_date);
+    
+    strcpy(new_car.sold_date, "0000/00/00");
 
-    // Ensure the new entry starts on a new line
+    // Append new car details to the file
     fprintf(file, "\n%d, %s, %s, %s, %s, %.2f, %d, %d, %d, %s",
             new_car.car_id, new_car.model_name, new_car.color, new_car.fuel_type,
             new_car.car_type, new_car.price, new_car.sold_cars,
@@ -1020,7 +1023,7 @@ void save_customer_to_file(const char *filename, customer *cust)
     }
     else
     {
-        fprintf(file, "%d, %s, %d, %d, %s, %s, %s, %s, %.2f, %.2f, %s\n",
+        fprintf(file, "\n%d, %s, %d, %d, %s, %s, %s, %s, %.2f, %.2f, %s\n",
                 cust->customer_id, cust->name, cust->registration_no, cust->car_id,
                 cust->mobile_no, cust->address, cust->prev_service_date, cust->next_service_date,
                 cust->actual_amt_to_pay, cust->emi, cust->insurance_eval_date);
@@ -1028,8 +1031,42 @@ void save_customer_to_file(const char *filename, customer *cust)
     }
 }
 
+int is_customer_id_unique(showroom *showrooms, int showroom_count, int customer_id)
+{
+    for (int i = 0; i < showroom_count; i++)
+    {
+        customer *current = showrooms[i].customer_list;
+        while (current)
+        {
+            if (current->customer_id == customer_id)
+            {
+                return 0; // Not unique
+            }
+            current = current->next;
+        }
+    }
+    return 1; // Unique
+}
+
+int is_car_id_unique(showroom *showrooms, int showroom_count, int car_id)
+{
+    for (int i = 0; i < showroom_count; i++)
+    {
+        customer *current = showrooms[i].customer_list;
+        while (current)
+        {
+            if (current->car_id == car_id)
+            {
+                return 0; // Not unique
+            }
+            current = current->next;
+        }
+    }
+    return 1; // Unique
+}
+
 // Function to add a customer to a showroom
-void add_customer_to_showroom(showroom *showrooms)
+void add_customer_to_showroom(showroom *showrooms, int showroom_count)
 {
     int showroom_id;
     printf("Enter showroom number (1-%d): ", NUM_SHOWROOMS);
@@ -1038,261 +1075,79 @@ void add_customer_to_showroom(showroom *showrooms)
     if (showroom_id < 1 || showroom_id > NUM_SHOWROOMS)
     {
         printf("Invalid showroom number!\n");
+        return;
     }
-    else
-    {
-        int id, reg_no, car_id;
-        char name[MAX_STRING_LEN], address[MAX_STRING_LEN], mobile[15];
-        char prev_service[11], next_service[11], insurance_eval[11];
-        float actual_amt, emi;
 
+    int id, reg_no, car_id;
+    char name[MAX_STRING_LEN], address[MAX_STRING_LEN], mobile[15];
+    char prev_service[11], next_service[11], insurance_eval[11];
+    float actual_amt, emi;
+
+    int flag1 = 0;
+
+    while (!flag1) // Loop until a unique customer ID is entered
+    {
         printf("Enter Customer ID: ");
         scanf("%d", &id);
-        printf("Enter Name: ");
-        scanf(" %[^\n]", name);
-        printf("Enter Registration Number: ");
-        scanf("%d", &reg_no);
+        if (!is_customer_id_unique(showrooms, showroom_count, id))
+        {
+            printf("Error: Customer ID already exists. Please enter a unique ID.\n");
+        }
+        else
+        {
+            flag1 = 1;
+        }
+    }
+
+    printf("Enter Name: ");
+    scanf(" %[^\n]", name);
+    printf("Enter Registration Number: ");
+    scanf("%d", &reg_no);
+
+    int flag2 = 0;
+
+    while (!flag2) // Loop until a unique car ID is entered
+    {
         printf("Enter Car ID: ");
         scanf("%d", &car_id);
-        printf("Enter Mobile Number: ");
-        scanf("%s", mobile);
-        printf("Enter Address: ");
-        scanf(" %[^\n]", address);
-        printf("Enter Previous Service Date (YYYY-MM-DD): ");
-        scanf("%s", prev_service);
-        printf("Enter Next Service Date (YYYY-MM-DD): ");
-        scanf("%s", next_service);
-        printf("Enter Actual Amount to Pay: ");
-        scanf("%f", &actual_amt);
-        printf("Enter EMI: ");
-        scanf("%f", &emi);
-        printf("Enter Insurance Evaluation Date (YYYY-MM-DD): ");
-        scanf("%s", insurance_eval);
-
-        // Create the new customer
-        customer *new_cust = create_customer(id, name, reg_no, car_id, mobile,
-                                             address, prev_service, next_service,
-                                             actual_amt, emi, insurance_eval);
-
-        // Insert into linked list
-        showrooms[showroom_id - 1].customer_list = insert_customer_end(showrooms[showroom_id - 1].customer_list, new_cust);
-
-        // Save to file
-        char filename[50];
-        sprintf(filename, "showroom%d_customers.txt", showroom_id);
-        save_customer_to_file(filename, new_cust);
-
-        printf("Customer added successfully to showroom %d!\n", showroom_id);
-    }
-}
-
-salesperson *delete_salesperson(salesperson *head, int id)
-{
-    salesperson *current = head, *prev = NULL;
-    while (current)
-    {
-        if (current->salesperson_id == id)
+        if (!is_car_id_unique(showrooms, showroom_count, car_id))
         {
-            if (prev)
-                prev->next = current->next;
-            else
-                head = current->next;
-            
-            free(current);
-            return head;
+            printf("Error: Car ID already assigned to another customer. Please enter a unique Car ID.\n");
         }
-        prev = current;
-        current = current->next;
-    }
-    printf("Salesperson ID %d not found!\n", id);
-    return head;
-}
-
-void save_salespersons_to_file(const char *filename, salesperson *head)
-{
-    FILE *file = fopen(filename, "w"); // Overwrite file
-    if (!file)
-    {
-        perror("Error opening file");
-        return;
-    }
-
-    salesperson *current = head;
-    while (current)
-    {
-        fprintf(file, "%d, %s, %s, %s, %.2f, %.2f, %.2f\n",
-                current->salesperson_id, current->name_salesperson, current->DOB, current->address,
-                current->sales_target, current->sales_achieved, current->commission);
-        current = current->next;
-    }
-
-    fclose(file);
-}
-
-void delete_salesperson_from_showroom(showroom *showrooms)
-{
-    int showroom_id, sp_id;
-    printf("Enter showroom number (1-%d): ", NUM_SHOWROOMS);
-    scanf("%d", &showroom_id);
-
-    if (showroom_id < 1 || showroom_id > NUM_SHOWROOMS)
-    {
-        printf("Invalid showroom number!\n");
-        return;
-    }
-
-    printf("Enter Salesperson ID to delete: ");
-    scanf("%d", &sp_id);
-
-    showroom *selected_showroom = &showrooms[showroom_id - 1];
-    selected_showroom->salesperson_list = delete_salesperson(selected_showroom->salesperson_list, sp_id);
-
-    // Update file after deletion
-    char filename[50];
-    sprintf(filename, "showroom%d_salesperson.txt", showroom_id);
-    save_salespersons_to_file(filename, selected_showroom->salesperson_list);
-
-    printf("Salesperson with ID %d deleted successfully from showroom %d!\n", sp_id, showroom_id);
-}
-
-car *delete_car(car *head, int car_id)
-{
-    car *current = head, *prev = NULL;
-    while (current)
-    {
-        if (current->car_id == car_id)
+        else
         {
-            if (prev)
-                prev->next = current->next;
-            else
-                head = current->next;
-
-            free(current);
-            return head;
+            flag2 = 1;
         }
-        prev = current;
-        current = current->next;
-    }
-    printf("Car ID %d not found!\n", car_id);
-    return head;
-}
-
-void save_cars_to_file(const char *filename, car *head)
-{
-    FILE *file = fopen(filename, "w");
-    if (!file)
-    {
-        perror("Error opening file");
-        return;
     }
 
-    car *current = head;
-    while (current)
-    {
-        fprintf(file, "%d, %s, %s, %s, %s, %.2f, %d, %d, %d, %s\n",
-                current->car_id, current->model_name, current->color, current->fuel_type,
-                current->car_type, current->price, current->sold_cars,
-                current->available_cars, current->required_stock, current->sold_date);
-        current = current->next;
-    }
+    printf("Enter Mobile Number: ");
+    scanf("%s", mobile);
+    printf("Enter Address: ");
+    scanf(" %[^\n]", address);
+    printf("Enter Previous Service Date (YYYY-MM-DD): ");
+    scanf("%s", prev_service);
+    printf("Enter Next Service Date (YYYY-MM-DD): ");
+    scanf("%s", next_service);
+    printf("Enter Actual Amount to Pay: ");
+    scanf("%f", &actual_amt);
+    printf("Enter EMI: ");
+    scanf("%f", &emi);
+    printf("Enter Insurance Evaluation Date (YYYY-MM-DD): ");
+    scanf("%s", insurance_eval);
 
-    fclose(file);
-}
+    // Create the new customer
+    customer *new_cust = create_customer(id, name, reg_no, car_id, mobile,
+                                         address, prev_service, next_service,
+                                         actual_amt, emi, insurance_eval);
 
+    // Insert into linked list
+    showrooms[showroom_id - 1].customer_list = insert_customer_end(showrooms[showroom_id - 1].customer_list, new_cust);
 
-void delete_car_from_showroom(showroom *showrooms)
-{
-    int showroom_id, car_id;
-    printf("Enter showroom number (1-%d): ", NUM_SHOWROOMS);
-    scanf("%d", &showroom_id);
-
-    if (showroom_id < 1 || showroom_id > NUM_SHOWROOMS)
-    {
-        printf("Invalid showroom number!\n");
-        return;
-    }
-
-    printf("Enter Car ID to delete: ");
-    scanf("%d", &car_id);
-
-    showroom *selected_showroom = &showrooms[showroom_id - 1];
-    selected_showroom->car_list = delete_car(selected_showroom->car_list, car_id);
-
-    // Update file after deletion
-    char filename[50];
-    sprintf(filename, "showroom%d_cars.txt", showroom_id);
-    save_cars_to_file(filename, selected_showroom->car_list);
-
-    printf("Car with ID %d deleted successfully from showroom %d!\n", car_id, showroom_id);
-}
-
-customer *delete_customer(customer *head, int customer_id)
-{
-    customer *current = head, *prev = NULL;
-    while (current)
-    {
-        if (current->customer_id == customer_id)
-        {
-            if (prev)
-                prev->next = current->next;
-            else
-                head = current->next;
-
-            free(current);
-            return head;
-        }
-        prev = current;
-        current = current->next;
-    }
-    printf("Customer ID %d not found!\n", customer_id);
-    return head;
-}
-
-void save_customers_to_file(const char *filename, customer *head)
-{
-    FILE *file = fopen(filename, "w");
-    if (!file)
-    {
-        perror("Error opening file");
-        return;
-    }
-
-    customer *current = head;
-    while (current)
-    {
-        fprintf(file, "%d, %s, %d, %d, %s, %s, %s, %s, %.2f, %.2f, %s\n",
-                current->customer_id, current->name, current->registration_no, current->car_id,
-                current->mobile_no, current->address, current->prev_service_date, current->next_service_date,
-                current->actual_amt_to_pay, current->emi, current->insurance_eval_date);
-        current = current->next;
-    }
-
-    fclose(file);
-}
-
-
-void delete_customer_from_showroom(showroom *showrooms)
-{
-    int showroom_id, customer_id;
-    printf("Enter showroom number (1-%d): ", NUM_SHOWROOMS);
-    scanf("%d", &showroom_id);
-
-    if (showroom_id < 1 || showroom_id > NUM_SHOWROOMS)
-    {
-        printf("Invalid showroom number!\n");
-        return;
-    }
-
-    printf("Enter Customer ID to delete: ");
-    scanf("%d", &customer_id);
-
-    showroom *selected_showroom = &showrooms[showroom_id - 1];
-    selected_showroom->customer_list = delete_customer(selected_showroom->customer_list, customer_id);
-
-    // Update file after deletion
+    // Save to file
     char filename[50];
     sprintf(filename, "showroom%d_customers.txt", showroom_id);
-    save_customers_to_file(filename, selected_showroom->customer_list);
+    save_customer_to_file(filename, new_cust);
 
-    printf("Customer with ID %d deleted successfully from showroom %d!\n", customer_id, showroom_id);
+    printf("Customer added successfully to showroom %d!\n", showroom_id);
 }
+
